@@ -1,28 +1,62 @@
-// Compile : clang++ main.cpp -std=c++11 -lSDL2 -o Game or g++ main.cpp -std=c++11 -lSDL2 -o Game
-
+//g++ -otutorial tutorial.cpp -lSDL2 -lSDL2_image
 
 #include <SDL2/SDL.h>
-
+#include <SDL2/SDL_image.h>
 #include <iostream>
 #include <vector>
 
 //MODEL-------------------------------------------------------------------------
-
 class Objeto{
 private:
 int posX,posY;//posicao do canto inferior esquerdo do sprite.
 int sizeX,sizeY;
 int colliderX, colliderY;//collider a partir do canto inferior esquerdo do sprite
-
+SDL_Texture* sprite;
+std::string spritePath;
 
 public:
+Objeto(int px, int py, int sx, int sy, int colx, int coly, std::string sp, SDL_Renderer* renderer1);
+int getPosX();
+int getPosY();
+int getSizeX();
+int getSizeY();
+int getColX();
+int getColY();
+SDL_Texture* getSprite();
 
+};
 
+Objeto::Objeto(int px, int py, int sx, int sy, int colx, int coly, std::string sp, SDL_Renderer* renderer1){
+this->posX = px;
+this->posY = py;
+this->sizeX = sx;
+this->sizeY = sy;
+this->colliderX = colx;
+this->colliderY = coly;
+this->spritePath = sp;//caminho para o arquivo de imagem da sprite
+this->sprite = IMG_LoadTexture(renderer1, sp.c_str());//endereco da textura
 }
-
-
-
-
+int Objeto::getPosX(){
+  return this->posX;
+}
+int Objeto::getPosY(){
+  return this->posY;
+}
+int Objeto::getSizeX(){
+  return this->sizeX;
+}
+int Objeto::getSizeY(){
+  return this->sizeY;
+}
+int Objeto::getColX(){
+  return this->colliderX;
+}
+int Objeto::getColY(){
+  return this->colliderY;
+}
+SDL_Texture* Objeto::getSprite(){
+  return this->sprite;
+}
 //------------------------------------------------------------------------------
 
 
@@ -31,6 +65,7 @@ public:
 class View {
 public:
   int initView();
+  void render(Objeto square);
 };
 int View::initView(){
 
@@ -72,6 +107,12 @@ int View::initView(){
   SDL_RenderPresent(renderer);
   SDL_Delay(4000);
   return 0;
+}
+void View::render(Objeto square){
+  SDL_Rect target;
+  target.x = square.getPosX();
+  target.y = square.getPosY()+square.getSizeY();
+
 }
 //------------------------------------------------------------------------------
 
