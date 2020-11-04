@@ -163,9 +163,11 @@ bool Controller::getRodando(){
 
 void Controller::updateInput(){
     SDL_PumpEvents(); // atualiza estado do teclado
-    if (evento.type == SDL_QUIT) {
-      rodando = false;
-    }
+
+while (SDL_PollEvent(&evento)) {//tem eventos na fila?
+      if (evento.type == SDL_QUIT) {//se tiver joga fora, se for SDL_QUIT saia
+        rodando = false;
+      }}
 }
 
 const Uint8* Controller::getState(){
@@ -188,9 +190,9 @@ janela.initView(100,100,600,600);
 Controller controle;
 janela.render(banana);
 
-while(teste < 500 && controle.getRodando()){
+while(teste < 1000 && controle.getRodando()){
 teste++;
-std::cout << controle.getRodando();
+
 controle.updateInput();
 
 if (controle.getState()[SDL_SCANCODE_LEFT]){
