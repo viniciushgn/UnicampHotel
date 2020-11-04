@@ -1,4 +1,4 @@
-//g++ -otutorial tutorial.cpp -lSDL2 -lSDL2_image
+//g++ -oGAME game.cpp -lSDL2 -lSDL2_image
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -188,8 +188,9 @@ janela.initView(100,100,600,600);
 Controller controle;
 janela.render(banana);
 
-while(teste < 9999999){
+while(teste < 500 && controle.getRodando()){
 teste++;
+std::cout << controle.getRodando();
 controle.updateInput();
 
 if (controle.getState()[SDL_SCANCODE_LEFT]){
