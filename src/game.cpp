@@ -10,24 +10,32 @@ class Objeto{
 private:
 int posX,posY;//posicao do canto inferior esquerdo do sprite.
 int sizeX,sizeY;
+int vel; //unidades somadas a posicao em cada frame
+int velMax;//velocidade andando
+int dir; //0 - Norte 1- Nordeste 2- Leste 3- Sudeste 4- Sul 5- Sudoeste 6- Oeste 7- Noroeste
 int colliderX, colliderY;//collider a partir do canto inferior esquerdo do sprite
 std::string spritePath;//caminho para o arquivo da sprite
 
 public:
-Objeto(int px, int py, int sx, int sy, int colx, int coly, std::string sp);
+Objeto(int px, int py, int sx, int sy, int colx, int coly, std::string sp, int velIni, int velMaxIni, int dirIni);
 int getPosX();
 int getPosY();
 int getSizeX();
 int getSizeY();
 int getColX();
 int getColY();
+int getVel();
+void setVel(int novaVel);
+int getDir();
+void setDir(int novaDir);
 std::string getSpritePath();
+int getVelMax();
 
 void addPos(int nx, int ny);
 void subPos(int nx, int ny);
 };
 
-Objeto::Objeto(int px, int py, int sx, int sy, int colx, int coly, std::string sp){
+Objeto::Objeto(int px, int py, int sx, int sy, int colx, int coly, std::string sp, int velIni,int velMaxIni,int dirIni){
 this->posX = px;
 this->posY = py;
 this->sizeX = sx;
@@ -35,7 +43,13 @@ this->sizeY = sy;
 this->colliderX = colx;
 this->colliderY = coly;
 this->spritePath = sp;//caminho para o arquivo de imagem da sprite
+this->vel = velIni;
+this->velMax = velMaxIni;
+this->dir = dirIni;
 }
+
+
+
 int Objeto::getPosX(){
   return this->posX;
 }
@@ -57,11 +71,26 @@ int Objeto::getColY(){
 std::string Objeto::getSpritePath(){
   return this->spritePath;
 }
+void Objeto::setVel(int novaVel){
+  this->vel = novaVel;
+}
+int Objeto::getVel(){
+  return this->vel;
+}
+void Objeto::setDir(int novaDir){
+  this->dir = novaDir;
+}
+int Objeto::getDir(){
+  return this->dir;
+}
+int Objeto::getVelMax(){
+  return this->velMax;
+}
+
 void Objeto::addPos(int nx, int ny){
   this->posX = this->posX + nx;
   this->posY = this->posY + ny;
 }
-
 void Objeto::subPos(int nx, int ny){
   this->posX = this->posX - nx;
   this->posY = this->posY - ny;
@@ -155,6 +184,7 @@ public:
 bool getRodando();
 void updateInput();
 const Uint8* getState();
+void updatePlayer(Objeto & jogador);
 };
 
 bool Controller::getRodando(){
@@ -174,6 +204,46 @@ const Uint8* Controller::getState(){
   return this->state;
 }
 
+void Controller::updatePlayer(Objeto & jogador){
+
+  bool parado = true;
+
+  if (this->state[SDL_SCANCODE_LEFT]){
+    parado = false;
+    jogador.setDir(6);
+    jogador.setVel(jogador.getVelMax());
+    jogador.subPos(jogador.getVel(),0);
+  }
+
+  if (this->state[SDL_SCANCODE_RIGHT]){
+    parado = false;
+    jogador.setDir(2);
+    jogador.setVel(jogador.getVelMax());
+    jogador.addPos(jogador.getVel(),0);
+  }
+
+  if (this->state[SDL_SCANCODE_UP]){
+    parado = false;
+    jogador.setDir(0);
+    jogador.setVel(jogador.getVelMax());
+    jogador.subPos(0,jogador.getVel());
+  }
+
+  if (this->state[SDL_SCANCODE_DOWN]){
+    parado = false;
+    jogador.setDir(4);
+    jogador.setVel(jogador.getVelMax());
+    jogador.addPos(0,jogador.getVel());
+  }
+
+  if(parado){
+    jogador.setVel(0);
+  }
+
+
+
+}
+
 
 //------------------------------------------------------------------------------
 
@@ -182,31 +252,23 @@ const Uint8* Controller::getState(){
 int main(int argc, char* args[]){
 int teste;
 teste = 0;
-Objeto banana(50,50,10,10,10,10,"./banana.png");
+Objeto banana(50,50,10,10,10,10,"./banana.png",0,5,0);
 
 View janela;
 janela.initView(100,100,600,600);
 
 Controller controle;
 janela.render(banana);
-
+//GAME LOOP
 while(teste < 1000 && controle.getRodando()){
 teste++;
 
 controle.updateInput();
-
-if (controle.getState()[SDL_SCANCODE_LEFT]){
-  banana.subPos(1,0);}
-if (controle.getState()[SDL_SCANCODE_RIGHT]) {
-  banana.addPos(1,0);}
-if (controle.getState()[SDL_SCANCODE_UP]) {
-  banana.subPos(0,1);}
-if (controle.getState()[SDL_SCANCODE_DOWN]) {
-  banana.addPos(0,1);}
+controle.updatePlayer(banana);
 
 janela.render(banana);
 }
-
+//GAME LOOP
 
 SDL_Quit();
 
