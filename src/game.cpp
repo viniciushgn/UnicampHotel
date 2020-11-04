@@ -126,6 +126,7 @@ void View::render(Objeto square){
   SDL_RenderClear(renderer);
     SDL_SetRenderDrawColor(renderer, 255, 0,0,255);
   //SDL_RenderCopy(renderer, texture2, nullptr, nullptr);
+
   SDL_RenderCopy(renderer, texture, nullptr, &target);
   SDL_RenderPresent(renderer);
 
@@ -185,7 +186,7 @@ janela.initView(100,100,600,600);
 Controller controle;
 janela.render(banana);
 
-while(teste < 4000){
+while(teste < 9999999){
 teste++;
 controle.updateInput();
 
@@ -198,7 +199,7 @@ if (controle.getState()[SDL_SCANCODE_UP]) {
 if (controle.getState()[SDL_SCANCODE_DOWN]) {
   banana.addPos(0,1);}
 
-janela.render(banana);
+//janela.render(banana);!!!
 }
 
 
