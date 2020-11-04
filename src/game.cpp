@@ -115,10 +115,12 @@ void View::render(Objeto square){
   SDL_Rect target;
   target.x = square.getPosX();
   target.y = square.getPosY();
-
   // Carregando texturas
   // personagem
   SDL_Texture *texture = IMG_LoadTexture(renderer, square.getSpritePath().c_str());
+
+  SDL_QueryTexture(texture, nullptr, nullptr, &target.w, &target.h);
+
   // fundo
   //SDL_Texture *texture2 = IMG_LoadTexture(renderer, "./park.jpeg");
 
@@ -199,7 +201,7 @@ if (controle.getState()[SDL_SCANCODE_UP]) {
 if (controle.getState()[SDL_SCANCODE_DOWN]) {
   banana.addPos(0,1);}
 
-//janela.render(banana);!!!
+janela.render(banana);
 }
 
 
