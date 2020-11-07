@@ -5,7 +5,7 @@ Plano
 
 OK Fácil. Passo 1: Personagem andando na tela
 
-Fácil. Passo 2: Personagem andando na tela smooth (Delta.time)
+OK Fácil. Passo 2: Personagem andando na tela smooth (Delta.time)
 
 OK Médio. Passo 3: Personagem possui variável velocidade e direcao e a usa para andar na tela.
 
@@ -15,7 +15,7 @@ OK Médio. Passo 5: Botão de fechar fecha a tela
 
 -//04/11
 
-Médio. Passo 6: Personagem sendo acessado pela classe Room
+OK Médio. Passo 6: Personagem sendo acessado pela classe Room
 
 Médio. Passo 7: Personagem andando e Objeto na tela acessado pela classe Room
 
