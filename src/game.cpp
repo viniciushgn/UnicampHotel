@@ -27,6 +27,7 @@ int spriteSizeX;
 int spriteSizeY;
 int estadoSprite;
 int estadoSpriteTimer;
+bool isCollider;
 public:
 void ObjetoData(int px, int py, int sx, int sy, int colx, int coly, std::string sp, int velIni, int velMaxIni, int dirIni);
 int getPosX();
@@ -54,7 +55,16 @@ int getEstadoSprite();
 void incEstadoTimer();
 int getEstadoTimer();
 void resetEstadoTimer();
+void setCollider();
+bool getCollider();
 };
+
+bool Objeto::getCollider(){
+  return this->isCollider;
+}
+void Objeto::setCollider(){
+  this->isCollider = true;
+}
 
 void Objeto::resetEstadoTimer(){
   this->estadoSpriteTimer = 0;
@@ -111,6 +121,7 @@ this->vel = velIni;
 this->velMax = velMaxIni;
 this->dir = dirIni;
 this->estadoSpriteTimer = 0;
+this->isCollider = false;
 }
 int Objeto::getPosX(){
   return this->posX;
@@ -357,10 +368,32 @@ const Uint8* Controller::getState(){
 }
 void Controller::updatePlayer(Room & lugar){
 
-  bool parado = true;
+bool parado = true;
+int direcaoConflito = 9;
+bool conflito = false;
+bool umaDirecao = true;
 
-  if (this->state[SDL_SCANCODE_LEFT]){
+for(int iterator = 0; iterator < lugar.roomObjects.size(); iterator++){
+
+if(lugar.roomObjects[iterator].getCollider()){
+    if((lugar.roomObjects[iterator].getPosY() ) < (lugar.playerCharacter.getPosY() + lugar.playerCharacter.getSizeY()) && (lugar.roomObjects[iterator].getPosY() + lugar.roomObjects[iterator].getSizeY()  ) > (lugar.playerCharacter.getPosY() + lugar.playerCharacter.getSizeY()))
+    {
+      if(   (lugar.playerCharacter.getPosX() < (lugar.roomObjects[iterator].getPosX() + lugar.roomObjects[iterator].getSizeX())) && ((lugar.playerCharacter.getPosX() +  lugar.playerCharacter.getSizeX()) > lugar.roomObjects[iterator].getPosX()) )
+      {
+        direcaoConflito = lugar.playerCharacter.getDir();
+        conflito = true;
+      }
+    }
+  }
+  }
+
+
+
+
+  if (this->state[SDL_SCANCODE_LEFT] && umaDirecao){
+    umaDirecao = false;
     parado = false;
+    if(conflito == false || direcaoConflito == 2){
     lugar.playerCharacter.setDir(6);
     lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
     lugar.playerCharacter.subPos(lugar.playerCharacter.getVel(),0);
@@ -388,10 +421,12 @@ void Controller::updatePlayer(Room & lugar){
       }
     }
     }
+}
 
-
-  if (this->state[SDL_SCANCODE_RIGHT]){
+  if (this->state[SDL_SCANCODE_RIGHT] && umaDirecao ){
+    umaDirecao = false;
     parado = false;
+    if(conflito == false || direcaoConflito == 6){
     lugar.playerCharacter.setDir(2);
     lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
     lugar.playerCharacter.addPos(lugar.playerCharacter.getVel(),0);
@@ -419,6 +454,7 @@ void Controller::updatePlayer(Room & lugar){
       }
     }
   }
+}
 
 
 
@@ -428,9 +464,10 @@ void Controller::updatePlayer(Room & lugar){
 
 
 
-
-  if (this->state[SDL_SCANCODE_UP]){
+  if (this->state[SDL_SCANCODE_UP] && umaDirecao ){
+    umaDirecao = false;
     parado = false;
+    if(conflito == false || direcaoConflito == 4){
     lugar.playerCharacter.setDir(0);
     lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
     lugar.playerCharacter.subPos(0,lugar.playerCharacter.getVel());
@@ -458,9 +495,12 @@ void Controller::updatePlayer(Room & lugar){
       }
     }
   }
+}
 
-  if (this->state[SDL_SCANCODE_DOWN]){
+  if (this->state[SDL_SCANCODE_DOWN] && umaDirecao){
+
     parado = false;
+    if(conflito == false || direcaoConflito == 0){
     lugar.playerCharacter.setDir(4);
     lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
     lugar.playerCharacter.addPos(0,lugar.playerCharacter.getVel());
@@ -488,6 +528,8 @@ void Controller::updatePlayer(Room & lugar){
       }
     }
   }
+}
+
 
   if(parado){
     lugar.playerCharacter.setVel(0);
@@ -541,6 +583,9 @@ jogador.addSpritePoint(2,2);jogador.addSpritePoint(39,2);jogador.addSpritePoint(
 Objeto fundoBar;
 fundoBar.ObjetoData(0,0,780,600,0,0,"../assets/spriteBar.png",0,5,0);
 
+Objeto colider;
+colider.ObjetoData(480,450,300,300,50,50,"../assets/redBar.png",0,0,0);
+colider.setCollider();
 
 Objeto barCounter;
 barCounter.ObjetoData(0,0,780,600,0,0,"../assets/spriteBarCounter.png",0,5,0);
@@ -548,6 +593,7 @@ barCounter.ObjetoData(0,0,780,600,0,0,"../assets/spriteBarCounter.png",0,5,0);
 
 Room bar("O Bar", jogador, fundoBar);
 bar.AddObject(barCounter);
+bar.AddObject(colider);
 
 
 //VIEW
