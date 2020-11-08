@@ -132,9 +132,16 @@ private:
   //Setando Window e Renderer
   SDL_Window* window;
   SDL_Renderer* renderer;
+  SDL_Rect targetPlayer;
+  SDL_Rect targetBackground;
+  SDL_Texture *texturePlayer;
+  SDL_Texture *textureBackground;
+  SDL_Rect targetObjetos;
+std::vector<SDL_Texture *> textureObjetos;
 
 public:
   int initView(int posX, int posY, int sizeX, int sizeY);
+  void setUpTexture(Room & lugar);
   void render(Room & lugar);
 };
 int View::initView(int posX, int posY, int sizeX, int sizeY){
@@ -168,30 +175,46 @@ int View::initView(int posX, int posY, int sizeX, int sizeY){
 
   return 0;
 }
-void View::render(Room & lugar){
-  SDL_Rect targetPlayer;
-  targetPlayer.x = lugar.playerCharacter.getPosX();
-  targetPlayer.y = lugar.playerCharacter.getPosY();
+void View::setUpTexture(Room & lugar){
+
   targetPlayer.w = lugar.playerCharacter.getSizeX();
   targetPlayer.h = lugar.playerCharacter.getSizeY();
-
-  SDL_Rect targetBackground;
-  targetBackground.x = lugar.backgroundScene.getPosX();
-  targetBackground.y = lugar.backgroundScene.getPosY();
   targetBackground.w = lugar.backgroundScene.getSizeX();
   targetBackground.h = lugar.backgroundScene.getSizeY();
 
   // Carregando texturas
 //personagem
-  SDL_Texture *texturePlayer = IMG_LoadTexture(renderer, lugar.playerCharacter.getSpritePath().c_str());
+  this->texturePlayer = IMG_LoadTexture(renderer, lugar.playerCharacter.getSpritePath().c_str());
 //fundo
-  SDL_Texture *textureBackground = IMG_LoadTexture(renderer, lugar.backgroundScene.getSpritePath().c_str());
+  this->textureBackground = IMG_LoadTexture(renderer, lugar.backgroundScene.getSpritePath().c_str());
 /*
   int saberX;
   int saberY;
   SDL_QueryTexture(texture, nullptr, nullptr, &saberX, &saberY); //para saber info sobre a textura
 std::cout << "x:" << saberX << "y:" << saberY << std::endl;
 */
+for(int iterator = 0; iterator < lugar.roomObjects.size(); iterator++){
+  targetObjetos.x = lugar.roomObjects[iterator].getPosX();
+  targetObjetos.y = lugar.roomObjects[iterator].getPosY();
+
+  textureObjetos.push_back(IMG_LoadTexture(renderer, lugar.roomObjects[iterator].getSpritePath().c_str()));
+}
+
+
+
+}
+void View::render(Room & lugar){
+
+  targetPlayer.x = lugar.playerCharacter.getPosX();
+  targetPlayer.y = lugar.playerCharacter.getPosY();
+
+
+
+  targetBackground.x = lugar.backgroundScene.getPosX();
+  targetBackground.y = lugar.backgroundScene.getPosY();
+
+
+
 // Desenhar a cena
   SDL_RenderClear(renderer);
   SDL_SetRenderDrawColor(renderer, 255, 0,0,255);
@@ -201,32 +224,33 @@ std::cout << "x:" << saberX << "y:" << saberY << std::endl;
 //2 - Personagem
   SDL_RenderCopy(renderer, texturePlayer, nullptr, &targetPlayer);
 //3 - Objetos
-  SDL_Rect targetObjetos;
-  SDL_Texture *textureObjetos;
-for(int iterator = 0; iterator < lugar.roomObjects.size(); iterator++){
 
+
+for(int iterator = 0; iterator < lugar.roomObjects.size(); iterator++){
   targetObjetos.x = lugar.roomObjects[iterator].getPosX();
   targetObjetos.y = lugar.roomObjects[iterator].getPosY();
   targetObjetos.w = lugar.roomObjects[iterator].getSizeX();
   targetObjetos.h = lugar.roomObjects[iterator].getSizeY();
-  textureObjetos = IMG_LoadTexture(renderer, lugar.roomObjects[iterator].getSpritePath().c_str());
-  SDL_RenderCopy(renderer, textureObjetos, nullptr, &targetObjetos);
-  if(lugar.roomObjects[iterator].getPosY() < lugar.playerCharacter.getPosY())
+
+
+  SDL_RenderCopy(renderer, textureObjetos[iterator], nullptr, &targetObjetos);
+
+  if((lugar.roomObjects[iterator].getPosY() + lugar.roomObjects[iterator].getSizeY()) < (lugar.playerCharacter.getPosY() + lugar.playerCharacter.getSizeY()))
   {
-    SDL_RenderCopy(renderer, texturePlayer, nullptr, &targetPlayer);//se jogador esta na frente do objeto, renderizeo de novo
-  }
+    if(   (lugar.playerCharacter.getPosX() < (lugar.roomObjects[iterator].getPosX() + lugar.roomObjects[iterator].getSizeX())) && ((lugar.playerCharacter.getPosX() +  lugar.playerCharacter.getSizeX()) > lugar.roomObjects[iterator].getPosX()) )
+    {
+      SDL_RenderCopy(renderer, texturePlayer, nullptr, &targetPlayer);//se jogador esta na frente do objeto, renderizeo de novo
+    }
 }
-
-
+}
 
 
 
 
 //SWAP
   SDL_RenderPresent(renderer);
-
-
 }
+
 //------------------------------------------------------------------------------
 
 //CONTROLLER--------------------------------------------------------------------
@@ -318,7 +342,7 @@ const float fps = 60;
 float millisecondsPerFrame =(1/fps)*1000;
 
 Objeto luke;
-luke.ObjetoData(50,50,75,125,10,10,"../assets/banana.png",0,5,0);
+luke.ObjetoData(50,50,50,83,10,10,"../assets/banana.png",0,5,0);
 Objeto fundoBar;
 fundoBar.ObjetoData(0,0,780,600,0,0,"../assets/bar.png",0,5,0);
 
@@ -333,12 +357,14 @@ bar.AddObject(radio);
 
 //VIEW
 View janela;
-janela.initView(100,100,800,800);
-
+janela.initView(100,100,780,600);
+janela.setUpTexture(bar);
 Controller controle;
 
 //CONTROLLER
 while(controle.getRodando()){
+
+
 tFinal = std::chrono::system_clock::now();
 std::chrono::duration<double, std::milli> spentOnFrame = tFinal - tInicial;
 if(spentOnFrame.count() < millisecondsPerFrame )
@@ -346,6 +372,12 @@ if(spentOnFrame.count() < millisecondsPerFrame )
   std::chrono::duration<double, std::milli> delta_ms(millisecondsPerFrame- spentOnFrame.count());
   auto delta_ms_duration = std::chrono::duration_cast<std::chrono::milliseconds>(delta_ms);
   std::this_thread::sleep_for(std::chrono::milliseconds(delta_ms_duration.count()));
+}
+else{
+if(spentOnFrame.count() > millisecondsPerFrame*50)
+  {
+  SDL_QUIT;
+  return 0;}
 }
 tInicial = std::chrono::system_clock::now();
 

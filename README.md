@@ -17,9 +17,9 @@ OK Médio. Passo 5: Botão de fechar fecha a tela
 
 OK Médio. Passo 6: Personagem sendo acessado pela classe Room
 
-Médio. Passo 7: Personagem andando e Objeto na tela acessado pela classe Room
+OK Médio. Passo 7: Personagem andando e Objeto na tela acessado pela classe Room
 
-Fácil. Passo 8: Render de Personagem e Objeto obedece a ordem de visibilidade
+OK Fácil. Passo 8: Render de Personagem e Objeto obedece a ordem de visibilidade
 
 -//05/11
 
