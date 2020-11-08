@@ -23,12 +23,12 @@ OK Fácil. Passo 8: Render de Personagem e Objeto obedece a ordem de visibilidad
 
 -//05/11
 
-Difícil. Passo 9: Animação de sprites no Personagem e Objeto:
+OK Difícil. Passo 9: Animação de sprites no Personagem e Objeto:
 Estados indicam qual sprite é mostrada.
 
 -//07/11
 
-Difícil. Controller controla a mudança de estados.
+OK Difícil. Controller controla a mudança de estados.
 
 Médio. Passo 10: COLLISIONS de personagem com objetos. (controller)
 

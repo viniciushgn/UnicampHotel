@@ -21,6 +21,12 @@ int velMax;//velocidade andando
 int dir; //0 - Norte 1- Nordeste 2- Leste 3- Sudeste 4- Sul 5- Sudoeste 6- Oeste 7- Noroeste
 int colliderX, colliderY;//collider a partir do canto inferior esquerdo do sprite
 std::string spritePath;//caminho para o arquivo da sprite
+std::vector<int> spritePointsX;//pontos topleft da sprite
+std::vector<int> spritePointsY;//pontos topleft da sprite
+int spriteSizeX;
+int spriteSizeY;
+int estadoSprite;
+int estadoSpriteTimer;
 public:
 void ObjetoData(int px, int py, int sx, int sy, int colx, int coly, std::string sp, int velIni, int velMaxIni, int dirIni);
 int getPosX();
@@ -37,7 +43,62 @@ std::string getSpritePath();
 int getVelMax();
 void addPos(int nx, int ny);
 void subPos(int nx, int ny);
+void addSpritePoint(int ix, int iy);
+int getSpritePointX(int n);
+int getSpritePointY(int n);
+void setSpriteSize(int nx, int ny);
+int getSpriteSizeX();
+int getSpriteSizeY();
+void setEstadoSprite(int i);
+int getEstadoSprite();
+void incEstadoTimer();
+int getEstadoTimer();
+void resetEstadoTimer();
 };
+
+void Objeto::resetEstadoTimer(){
+  this->estadoSpriteTimer = 0;
+}
+
+void Objeto::incEstadoTimer(){
+  this->estadoSpriteTimer = this->estadoSpriteTimer + 1;
+}
+int Objeto::getEstadoTimer(){
+  return this->estadoSpriteTimer;
+}
+
+
+void Objeto::setEstadoSprite(int i){
+  this->estadoSprite = i;
+}
+int Objeto::getEstadoSprite(){
+  return this->estadoSprite;
+}
+int Objeto::getSpriteSizeY(){
+  return this->spriteSizeY;
+}
+int Objeto::getSpriteSizeX(){
+  return this->spriteSizeX;
+}
+void Objeto::setSpriteSize(int nx, int ny){
+  this->spriteSizeX = nx;
+  this->spriteSizeY = ny;
+}
+
+
+
+int Objeto::getSpritePointX(int n){
+return this->spritePointsX[n];
+}
+int Objeto::getSpritePointY(int n){
+return this->spritePointsY[n];
+}
+
+
+void Objeto::addSpritePoint(int ix, int iy){
+this->spritePointsX.push_back(ix);
+this->spritePointsY.push_back(iy);
+}
 void Objeto::ObjetoData(int px, int py, int sx, int sy, int colx, int coly, std::string sp, int velIni,int velMaxIni,int dirIni){
 this->posX = px;
 this->posY = py;
@@ -49,6 +110,7 @@ this->spritePath = sp;//caminho para o arquivo de imagem da sprite
 this->vel = velIni;
 this->velMax = velMaxIni;
 this->dir = dirIni;
+this->estadoSpriteTimer = 0;
 }
 int Objeto::getPosX(){
   return this->posX;
@@ -132,8 +194,11 @@ private:
   //Setando Window e Renderer
   SDL_Window* window;
   SDL_Renderer* renderer;
+
   SDL_Rect targetPlayer;
+  SDL_Rect targetPlayerSprite;
   SDL_Rect targetBackground;
+
   SDL_Texture *texturePlayer;
   SDL_Texture *textureBackground;
   SDL_Rect targetObjetos;
@@ -181,6 +246,11 @@ void View::setUpTexture(Room & lugar){
   targetPlayer.h = lugar.playerCharacter.getSizeY();
   targetBackground.w = lugar.backgroundScene.getSizeX();
   targetBackground.h = lugar.backgroundScene.getSizeY();
+  targetPlayerSprite.w = lugar.playerCharacter.getSpriteSizeX();
+  targetPlayerSprite.h = lugar.playerCharacter.getSpriteSizeY();
+
+  targetPlayerSprite.x = lugar.playerCharacter.getSpritePointX(0);
+  targetPlayerSprite.y = lugar.playerCharacter.getSpritePointY(0);
 
   // Carregando texturas
 //personagem
@@ -207,8 +277,8 @@ void View::render(Room & lugar){
 
   targetPlayer.x = lugar.playerCharacter.getPosX();
   targetPlayer.y = lugar.playerCharacter.getPosY();
-
-
+  targetPlayerSprite.x = lugar.playerCharacter.getSpritePointX(lugar.playerCharacter.getEstadoSprite());
+  targetPlayerSprite.y = lugar.playerCharacter.getSpritePointY(lugar.playerCharacter.getEstadoSprite());
 
   targetBackground.x = lugar.backgroundScene.getPosX();
   targetBackground.y = lugar.backgroundScene.getPosY();
@@ -222,7 +292,7 @@ void View::render(Room & lugar){
 //1- Fundo
   SDL_RenderCopy(renderer, textureBackground, nullptr, &targetBackground);
 //2 - Personagem
-  SDL_RenderCopy(renderer, texturePlayer, nullptr, &targetPlayer);
+  SDL_RenderCopy(renderer, texturePlayer, &targetPlayerSprite, &targetPlayer);
 //3 - Objetos
 
 
@@ -239,7 +309,7 @@ for(int iterator = 0; iterator < lugar.roomObjects.size(); iterator++){
   {
     if(   (lugar.playerCharacter.getPosX() < (lugar.roomObjects[iterator].getPosX() + lugar.roomObjects[iterator].getSizeX())) && ((lugar.playerCharacter.getPosX() +  lugar.playerCharacter.getSizeX()) > lugar.roomObjects[iterator].getPosX()) )
     {
-      SDL_RenderCopy(renderer, texturePlayer, nullptr, &targetPlayer);//se jogador esta na frente do objeto, renderizeo de novo
+      SDL_RenderCopy(renderer, texturePlayer, &targetPlayerSprite, &targetPlayer);//se jogador esta na frente do objeto, renderizeo de novo
     }
 }
 }
@@ -294,20 +364,99 @@ void Controller::updatePlayer(Room & lugar){
     lugar.playerCharacter.setDir(6);
     lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
     lugar.playerCharacter.subPos(lugar.playerCharacter.getVel(),0);
-  }
+    lugar.playerCharacter.incEstadoTimer();
+
+    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*3){
+          lugar.playerCharacter.setEstadoSprite(3);
+        }
+    else{
+        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
+          lugar.playerCharacter.setEstadoSprite(4);
+        }
+        else{
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*9){
+          lugar.playerCharacter.setEstadoSprite(3);
+        }
+        else{
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*12){
+            lugar.playerCharacter.setEstadoSprite(5);
+          }
+          else{
+          lugar.playerCharacter.resetEstadoTimer();
+        }
+        }
+      }
+    }
+    }
+
 
   if (this->state[SDL_SCANCODE_RIGHT]){
     parado = false;
     lugar.playerCharacter.setDir(2);
     lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
     lugar.playerCharacter.addPos(lugar.playerCharacter.getVel(),0);
+    lugar.playerCharacter.incEstadoTimer();
+
+    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*3){
+          lugar.playerCharacter.setEstadoSprite(6);
+        }
+    else{
+        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
+          lugar.playerCharacter.setEstadoSprite(7);
+        }
+        else{
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*9){
+          lugar.playerCharacter.setEstadoSprite(6);
+        }
+        else{
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*12){
+            lugar.playerCharacter.setEstadoSprite(8);
+          }
+          else{
+          lugar.playerCharacter.resetEstadoTimer();
+        }
+        }
+      }
+    }
   }
+
+
+
+
+
+
+
+
+
 
   if (this->state[SDL_SCANCODE_UP]){
     parado = false;
     lugar.playerCharacter.setDir(0);
     lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
     lugar.playerCharacter.subPos(0,lugar.playerCharacter.getVel());
+    lugar.playerCharacter.incEstadoTimer();
+
+    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*3){
+          lugar.playerCharacter.setEstadoSprite(9);
+        }
+    else{
+        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
+          lugar.playerCharacter.setEstadoSprite(10);
+        }
+        else{
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*9){
+          lugar.playerCharacter.setEstadoSprite(9);
+        }
+        else{
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*12){
+            lugar.playerCharacter.setEstadoSprite(11);
+          }
+          else{
+          lugar.playerCharacter.resetEstadoTimer();
+        }
+        }
+      }
+    }
   }
 
   if (this->state[SDL_SCANCODE_DOWN]){
@@ -315,10 +464,53 @@ void Controller::updatePlayer(Room & lugar){
     lugar.playerCharacter.setDir(4);
     lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
     lugar.playerCharacter.addPos(0,lugar.playerCharacter.getVel());
+    lugar.playerCharacter.incEstadoTimer();
+
+    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*3){
+          lugar.playerCharacter.setEstadoSprite(0);
+        }
+    else{
+        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
+          lugar.playerCharacter.setEstadoSprite(1);
+        }
+        else{
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*9){
+          lugar.playerCharacter.setEstadoSprite(0);
+        }
+        else{
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*12){
+            lugar.playerCharacter.setEstadoSprite(2);
+          }
+          else{
+          lugar.playerCharacter.resetEstadoTimer();
+        }
+        }
+      }
+    }
   }
 
   if(parado){
     lugar.playerCharacter.setVel(0);
+if(lugar.playerCharacter.getEstadoSprite() >= 9){
+  lugar.playerCharacter.setEstadoSprite(9);
+}
+else{
+  if(lugar.playerCharacter.getEstadoSprite() >= 6){
+      lugar.playerCharacter.setEstadoSprite(6);
+  }
+  else{
+    if(lugar.playerCharacter.getEstadoSprite() >= 3){
+      lugar.playerCharacter.setEstadoSprite(3);
+    }
+    else{
+      lugar.playerCharacter.setEstadoSprite(0);
+    }
+  }
+}
+
+
+
+    lugar.playerCharacter.resetEstadoTimer();
   }
 
 
@@ -341,18 +533,21 @@ int main(int argc, char* args[]){
 const float fps = 60;
 float millisecondsPerFrame =(1/fps)*1000;
 
-Objeto luke;
-luke.ObjetoData(50,50,50,83,10,10,"../assets/banana.png",0,5,0);
+Objeto jogador;
+jogador.ObjetoData(175,500,62,116,10,10,"../assets/spriteplayer.png",0,3,0);
+jogador.setSpriteSize(31,58);
+jogador.addSpritePoint(2,2);jogador.addSpritePoint(39,2);jogador.addSpritePoint(76,2);jogador.addSpritePoint(2,66);jogador.addSpritePoint(39,66);jogador.addSpritePoint(76,66);jogador.addSpritePoint(2,130);jogador.addSpritePoint(39,130);jogador.addSpritePoint(76,130);jogador.addSpritePoint(2,194);jogador.addSpritePoint(39,194);jogador.addSpritePoint(76,194);
+
 Objeto fundoBar;
-fundoBar.ObjetoData(0,0,780,600,0,0,"../assets/bar.png",0,5,0);
-
-Objeto radio;
-radio.ObjetoData(50,51,100,100,80,80,"../assets/radio.jpg",0,5,0);
+fundoBar.ObjetoData(0,0,780,600,0,0,"../assets/spriteBar.png",0,5,0);
 
 
-Room bar("O Bar", luke, fundoBar);
-bar.AddObject(radio);
+Objeto barCounter;
+barCounter.ObjetoData(0,0,780,600,0,0,"../assets/spriteBarCounter.png",0,5,0);
 
+
+Room bar("O Bar", jogador, fundoBar);
+bar.AddObject(barCounter);
 
 
 //VIEW
