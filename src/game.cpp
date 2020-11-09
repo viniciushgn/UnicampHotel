@@ -11,7 +11,13 @@
 //
 
 //MODEL-------------------------------------------------------------------------
+class UI{
+private:
+std::vector<std::string> messagesVector;
 
+
+
+};
 class Objeto{
 private:
 int posX,posY;//posicao do canto inferior esquerdo do sprite.
@@ -28,6 +34,8 @@ int spriteSizeY;
 int estadoSprite;
 int estadoSpriteTimer;
 bool isCollider;
+bool isLinker;
+std::string linkPath;
 public:
 void ObjetoData(int px, int py, int sx, int sy, int colx, int coly, std::string sp, int velIni, int velMaxIni, int dirIni);
 int getPosX();
@@ -57,7 +65,14 @@ int getEstadoTimer();
 void resetEstadoTimer();
 void setCollider();
 bool getCollider();
+void setLinker(std::string path);
 };
+
+void Objeto::setLinker(std::string path){
+  this->isLinker = true;
+  this->linkPath = path;
+}
+
 
 bool Objeto::getCollider(){
   return this->isCollider;
@@ -122,6 +137,7 @@ this->velMax = velMaxIni;
 this->dir = dirIni;
 this->estadoSpriteTimer = 0;
 this->isCollider = false;
+this->isLinker = false;
 }
 int Objeto::getPosX(){
   return this->posX;
@@ -187,9 +203,12 @@ void Room::AddName(std::string iroomName)
 {
   this->roomName = iroomName;
 }
+
 void Room::AddObject(Objeto & objetoAdicionado)
 {
+
   this->roomObjects.push_back(objetoAdicionado);
+
 }
 
 
@@ -399,19 +418,19 @@ if(lugar.roomObjects[iterator].getCollider()){
     lugar.playerCharacter.subPos(lugar.playerCharacter.getVel(),0);
     lugar.playerCharacter.incEstadoTimer();
 
-    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*3){
+    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*2){
           lugar.playerCharacter.setEstadoSprite(3);
         }
     else{
-        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
+        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*4){
           lugar.playerCharacter.setEstadoSprite(4);
         }
         else{
-          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*9){
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
           lugar.playerCharacter.setEstadoSprite(3);
         }
         else{
-          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*12){
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*8){
             lugar.playerCharacter.setEstadoSprite(5);
           }
           else{
@@ -432,19 +451,19 @@ if(lugar.roomObjects[iterator].getCollider()){
     lugar.playerCharacter.addPos(lugar.playerCharacter.getVel(),0);
     lugar.playerCharacter.incEstadoTimer();
 
-    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*3){
+    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*2){
           lugar.playerCharacter.setEstadoSprite(6);
         }
     else{
-        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
+        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*4){
           lugar.playerCharacter.setEstadoSprite(7);
         }
         else{
-          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*9){
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
           lugar.playerCharacter.setEstadoSprite(6);
         }
         else{
-          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*12){
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*8){
             lugar.playerCharacter.setEstadoSprite(8);
           }
           else{
@@ -473,19 +492,19 @@ if(lugar.roomObjects[iterator].getCollider()){
     lugar.playerCharacter.subPos(0,lugar.playerCharacter.getVel());
     lugar.playerCharacter.incEstadoTimer();
 
-    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*3){
+    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*2){
           lugar.playerCharacter.setEstadoSprite(9);
         }
     else{
-        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
+        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*4){
           lugar.playerCharacter.setEstadoSprite(10);
         }
         else{
-          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*9){
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
           lugar.playerCharacter.setEstadoSprite(9);
         }
         else{
-          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*12){
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*8){
             lugar.playerCharacter.setEstadoSprite(11);
           }
           else{
@@ -506,19 +525,19 @@ if(lugar.roomObjects[iterator].getCollider()){
     lugar.playerCharacter.addPos(0,lugar.playerCharacter.getVel());
     lugar.playerCharacter.incEstadoTimer();
 
-    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*3){
+    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*2){
           lugar.playerCharacter.setEstadoSprite(0);
         }
     else{
-        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
+        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*4){
           lugar.playerCharacter.setEstadoSprite(1);
         }
         else{
-          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*9){
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
           lugar.playerCharacter.setEstadoSprite(0);
         }
         else{
-          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*12){
+          if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*8){
             lugar.playerCharacter.setEstadoSprite(2);
           }
           else{
@@ -584,18 +603,24 @@ Objeto fundoBar;
 fundoBar.ObjetoData(0,0,780,600,0,0,"../assets/spriteBar.png",0,5,0);
 
 Objeto colider;
-colider.ObjetoData(480,450,300,300,50,50,"../assets/redBar.png",0,0,0);
+colider.ObjetoData(479,440,300,300,50,50,"../assets/redBar.png",0,0,0);
 colider.setCollider();
+
+Objeto stool;
+stool.ObjetoData(423,420,30,51,0,0,"../assets/barStool.png",0,0,0);
+
+Objeto stool2;
+stool2.ObjetoData(423,470,30,51,0,0,"../assets/barStool.png",0,0,0);
 
 Objeto barCounter;
 barCounter.ObjetoData(0,0,780,600,0,0,"../assets/spriteBarCounter.png",0,5,0);
 
 
 Room bar("O Bar", jogador, fundoBar);
-bar.AddObject(barCounter);
 bar.AddObject(colider);
-
-
+bar.AddObject(stool);
+bar.AddObject(stool2);
+bar.AddObject(barCounter);
 //VIEW
 View janela;
 janela.initView(100,100,780,600);
