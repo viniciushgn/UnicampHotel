@@ -83,6 +83,7 @@ bool Objeto::getLinkPendente(){
 }
 
 std::string Objeto::getLinkPath(){
+  this->linkPendente = false;
   return this->linkPath;
 }
 
@@ -261,6 +262,7 @@ std::vector<SDL_Texture *> textureObjetos;
 public:
   int initView(int posX, int posY, int sizeX, int sizeY);
   void setUpTexture(Room & lugar);
+  void resetTexture();
   void render(Room & lugar);
 };
 int View::initView(int posX, int posY, int sizeX, int sizeY){
@@ -323,10 +325,11 @@ for(int iterator = 0; iterator < lugar.roomObjects.size(); iterator++){
 
   textureObjetos.push_back(IMG_LoadTexture(renderer, lugar.roomObjects[iterator].getSpritePath().c_str()));
 }
-
-
-
 }
+void View::resetTexture(){
+  this->textureObjetos.clear();
+}
+
 void View::render(Room & lugar){
 
   targetPlayer.x = lugar.playerCharacter.getPosX();
@@ -341,7 +344,7 @@ void View::render(Room & lugar){
 
 // Desenhar a cena
   SDL_RenderClear(renderer);
-  SDL_SetRenderDrawColor(renderer, 255, 0,0,255);
+  SDL_SetRenderDrawColor(renderer,40,40,40,255);
 
 //1- Fundo
   SDL_RenderCopy(renderer, textureBackground, nullptr, &targetBackground);
@@ -396,7 +399,7 @@ bool getRodando();
 void updateInput();
 const Uint8* getState();
 void updatePlayer(Room & lugar);
-void updateRoom(Room & lugar, int & vetorAtual);
+bool updateRoom(Room & lugar, int & vetorAtual);
 };
 bool Controller::getRodando(){
   return this->rodando;
@@ -608,9 +611,13 @@ else{
 
 }
 
-void Controller::updateRoom(Room & lugar, int & vetorAtual){
+bool Controller::updateRoom(Room & lugar, int & vetorAtual){
   if(lugar.playerCharacter.getLinkPendente()){
-
+vetorAtual = atoi(lugar.playerCharacter.getLinkPath().c_str());
+return true;
+  }
+  else{
+    return false;
   }
 
 }
@@ -665,14 +672,37 @@ bar.AddObject(stool);
 bar.AddObject(stool2);
 bar.AddObject(barCounter);
 bar.AddObject(link);
+
+//------------------------------------------------------------------------------
+
+Objeto jogador2;
+jogador2.ObjetoData(370,100,62,116,10,10,"../assets/spriteplayer.png",0,3,0);
+jogador2.setSpriteSize(31,58);
+jogador2.addSpritePoint(2,2);jogador2.addSpritePoint(39,2);jogador2.addSpritePoint(76,2);jogador2.addSpritePoint(2,66);jogador2.addSpritePoint(39,66);jogador2.addSpritePoint(76,66);jogador2.addSpritePoint(2,130);jogador2.addSpritePoint(39,130);jogador2.addSpritePoint(76,130);jogador2.addSpritePoint(2,194);jogador2.addSpritePoint(39,194);jogador2.addSpritePoint(76,194);
+
+Objeto fundoBar2;
+fundoBar2.ObjetoData(19,0,741,576,0,0,"../assets/spriteHall.png",0,5,0);
+
+Objeto link2;
+link2.ObjetoData(340,40,100,20,50,50,"../assets/radio.jpg",0,0,0);
+link2.setCollider();
+link2.setLinker("0");
+
+Room bar2("O Bar 2", jogador2, fundoBar2);
+bar2.AddObject(link2);
+
+int vetorRoom = 0;
+std::vector<Room> gameRooms;
+gameRooms.push_back(bar);
+gameRooms.push_back(bar2);
+
+
 //VIEW
 View janela;
 janela.initView(100,100,780,600);
-janela.setUpTexture(bar);
+janela.setUpTexture(gameRooms[vetorRoom]);
 Controller controle;
 
-
-int vetor;
 
 
 //CONTROLLER
@@ -698,9 +728,12 @@ tInicial = std::chrono::system_clock::now();
 
 //GAME LOOP-----------------------------------------
 controle.updateInput();
-controle.updatePlayer(bar);
-controle.updateRoom(bar, vetor);
-janela.render(bar);
+controle.updatePlayer(gameRooms[vetorRoom]);
+if(controle.updateRoom(gameRooms[vetorRoom], vetorRoom)){
+  janela.resetTexture();
+  janela.setUpTexture(gameRooms[vetorRoom]);
+}
+janela.render(gameRooms[vetorRoom]);
 //GAME LOOP!----------------------------------------
 
 }
