@@ -35,6 +35,7 @@ int estadoSprite;
 int estadoSpriteTimer;
 bool isCollider;
 bool isLinker;
+bool linkPendente;
 std::string linkPath;
 public:
 void ObjetoData(int px, int py, int sx, int sy, int colx, int coly, std::string sp, int velIni, int velMaxIni, int dirIni);
@@ -66,7 +67,29 @@ void resetEstadoTimer();
 void setCollider();
 bool getCollider();
 void setLinker(std::string path);
+bool getIsLinker();
+std::string getLinkPath();
+bool getLinkPendente();
+void setLinkPendente(std::string path);
 };
+
+void Objeto::setLinkPendente(std::string path){
+  this->linkPath = path;
+  this->linkPendente = true;
+}
+
+bool Objeto::getLinkPendente(){
+  return this->linkPendente;
+}
+
+std::string Objeto::getLinkPath(){
+  return this->linkPath;
+}
+
+bool Objeto::getIsLinker(){
+  return this->isLinker;
+}
+
 
 void Objeto::setLinker(std::string path){
   this->isLinker = true;
@@ -138,6 +161,7 @@ this->dir = dirIni;
 this->estadoSpriteTimer = 0;
 this->isCollider = false;
 this->isLinker = false;
+this->linkPendente = false;
 }
 int Objeto::getPosX(){
   return this->posX;
@@ -339,7 +363,9 @@ for(int iterator = 0; iterator < lugar.roomObjects.size(); iterator++){
   {
     if(   (lugar.playerCharacter.getPosX() < (lugar.roomObjects[iterator].getPosX() + lugar.roomObjects[iterator].getSizeX())) && ((lugar.playerCharacter.getPosX() +  lugar.playerCharacter.getSizeX()) > lugar.roomObjects[iterator].getPosX()) )
     {
+      if(!lugar.playerCharacter.getLinkPendente()){
       SDL_RenderCopy(renderer, texturePlayer, &targetPlayerSprite, &targetPlayer);//se jogador esta na frente do objeto, renderizeo de novo
+    }
     }
 }
 }
@@ -370,6 +396,7 @@ bool getRodando();
 void updateInput();
 const Uint8* getState();
 void updatePlayer(Room & lugar);
+void updateRoom(Room & lugar, int & vetorAtual);
 };
 bool Controller::getRodando(){
   return this->rodando;
@@ -401,6 +428,9 @@ if(lugar.roomObjects[iterator].getCollider()){
       {
         direcaoConflito = lugar.playerCharacter.getDir();
         conflito = true;
+        if(lugar.roomObjects[iterator].getIsLinker()){
+          lugar.playerCharacter.setLinkPendente(lugar.roomObjects[iterator].getLinkPath());
+        }
       }
     }
   }
@@ -578,6 +608,13 @@ else{
 
 }
 
+void Controller::updateRoom(Room & lugar, int & vetorAtual){
+  if(lugar.playerCharacter.getLinkPendente()){
+
+  }
+
+}
+
 
 //------------------------------------------------------------------------------
 
@@ -595,7 +632,7 @@ const float fps = 60;
 float millisecondsPerFrame =(1/fps)*1000;
 
 Objeto jogador;
-jogador.ObjetoData(175,500,62,116,10,10,"../assets/spriteplayer.png",0,3,0);
+jogador.ObjetoData(175,450,62,116,10,10,"../assets/spriteplayer.png",0,3,0);
 jogador.setSpriteSize(31,58);
 jogador.addSpritePoint(2,2);jogador.addSpritePoint(39,2);jogador.addSpritePoint(76,2);jogador.addSpritePoint(2,66);jogador.addSpritePoint(39,66);jogador.addSpritePoint(76,66);jogador.addSpritePoint(2,130);jogador.addSpritePoint(39,130);jogador.addSpritePoint(76,130);jogador.addSpritePoint(2,194);jogador.addSpritePoint(39,194);jogador.addSpritePoint(76,194);
 
@@ -605,6 +642,12 @@ fundoBar.ObjetoData(0,0,780,600,0,0,"../assets/spriteBar.png",0,5,0);
 Objeto colider;
 colider.ObjetoData(479,440,300,300,50,50,"../assets/redBar.png",0,0,0);
 colider.setCollider();
+
+Objeto link;
+link.ObjetoData(155,600,140,60,50,50,"../assets/redBar.jpg",0,0,0);
+link.setCollider();
+link.setLinker("1");
+
 
 Objeto stool;
 stool.ObjetoData(423,420,30,51,0,0,"../assets/barStool.png",0,0,0);
@@ -621,11 +664,16 @@ bar.AddObject(colider);
 bar.AddObject(stool);
 bar.AddObject(stool2);
 bar.AddObject(barCounter);
+bar.AddObject(link);
 //VIEW
 View janela;
 janela.initView(100,100,780,600);
 janela.setUpTexture(bar);
 Controller controle;
+
+
+int vetor;
+
 
 //CONTROLLER
 while(controle.getRodando()){
@@ -651,6 +699,7 @@ tInicial = std::chrono::system_clock::now();
 //GAME LOOP-----------------------------------------
 controle.updateInput();
 controle.updatePlayer(bar);
+controle.updateRoom(bar, vetor);
 janela.render(bar);
 //GAME LOOP!----------------------------------------
 
