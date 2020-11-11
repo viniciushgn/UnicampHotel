@@ -712,10 +712,6 @@ link2.ObjetoData(340,40,100,20,50,50,"../assets/radio.jpg",0,0,0);
 link2.setCollider();
 link2.setLinker("0");
 
-Objeto link3;
-link3.ObjetoData(340,600,100,20,50,50,"../assets/radio.jpg",0,0,0);
-link3.setCollider();
-//link3.setLinker("2");
 
 
 Objeto arco;
@@ -723,7 +719,6 @@ arco.ObjetoData(283,0,213,243,0,0,"../assets/spriteArco.png",0,0,0);
 
 Room bar2(":.ENTRADA.:", jogador2, fundoBar2);
 bar2.AddObject(link2);
-bar2.AddObject(link3);
 bar2.AddObject(arco);
 
 //------------------------------------------------------------------------------
