@@ -265,7 +265,13 @@ public:
   void setUpTexture(Room & lugar);
   void resetTexture();
   void render(Room & lugar);
+  void changeName(Room & lugar);
 };
+void View::changeName(Room & lugar){
+SDL_SetWindowTitle(this->window, lugar.roomName.c_str());
+
+
+}
 int View::initView(int posX, int posY, int sizeX, int sizeY){
 
 
@@ -675,11 +681,13 @@ stool.ObjetoData(423,420,30,51,0,0,"../assets/barStool.png",0,0,0);
 Objeto stool2;
 stool2.ObjetoData(423,470,30,51,0,0,"../assets/barStool.png",0,0,0);
 
+
 Objeto barCounter;
 barCounter.ObjetoData(0,0,780,600,0,0,"../assets/spriteBarCounter.png",0,5,0);
 
 
-Room bar("O Bar", jogador, fundoBar);
+Room bar("", jogador, fundoBar);
+
 bar.AddObject(colider);
 bar.AddObject(colider2);
 bar.AddObject(colider3);
@@ -713,7 +721,7 @@ link3.setCollider();
 Objeto arco;
 arco.ObjetoData(283,0,213,243,0,0,"../assets/spriteArco.png",0,0,0);
 
-Room bar2("O Bar 2", jogador2, fundoBar2);
+Room bar2(":.ENTRADA.:", jogador2, fundoBar2);
 bar2.AddObject(link2);
 bar2.AddObject(link3);
 bar2.AddObject(arco);
@@ -765,6 +773,7 @@ controle.updatePlayer(gameRooms[vetorRoom]);
 if(controle.updateRoom(gameRooms[vetorRoom], vetorRoom)){
   janela.resetTexture();
   janela.setUpTexture(gameRooms[vetorRoom]);
+  janela.changeName(gameRooms[vetorRoom]);
 }
 janela.render(gameRooms[vetorRoom]);
 //GAME LOOP!----------------------------------------
