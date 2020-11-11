@@ -707,7 +707,7 @@ link2.setLinker("0");
 Objeto link3;
 link3.ObjetoData(340,600,100,20,50,50,"../assets/radio.jpg",0,0,0);
 link3.setCollider();
-link3.setLinker("2");
+//link3.setLinker("2");
 
 
 Objeto arco;
@@ -719,18 +719,6 @@ bar2.AddObject(link3);
 bar2.AddObject(arco);
 
 //------------------------------------------------------------------------------
-/*
-Objeto jogador3;
-jogador3.ObjetoData(370,100,62,116,10,10,"../assets/spriteplayer.png",0,3,0);
-jogador3.setSpriteSize(31,58);
-jogador3.addSpritePoint(2,2);jogador3.addSpritePoint(39,2);jogador3.addSpritePoint(76,2);jogador3.addSpritePoint(2,66);jogador3.addSpritePoint(39,66);jogador3.addSpritePoint(76,66);jogador3.addSpritePoint(2,130);jogador3.addSpritePoint(39,130);jogador3.addSpritePoint(76,130);jogador3.addSpritePoint(2,194);jogador3.addSpritePoint(39,194);jogador3.addSpritePoint(76,194);
-
-Objeto hallPrincipal;
-hallPrincipal.ObjetoData(19,0,741,576,0,0,"../assets/spriteHallPrincipal.png",0,5,0);
-
-Room oHallPrincipal("HallPrincipal", jogador3,0)*/
-
-
 
 
 

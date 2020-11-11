@@ -30,9 +30,14 @@ Estados indicam qual sprite é mostrada.
 
 OK Difícil. Controller controla a mudança de estados.
 
-Médio. Passo 10: COLLISIONS de personagem com objetos. (controller)
+OK Médio. Passo 10: COLLISIONS de personagem com objetos. (controller)
 
 -//08/11
+
+(EMERGENCIA)
+concertar:(erro gramatical proposital em homenagem a simetria entre crime e justiça)
+subclasses - uma classe só declara muita coisa!
+cópias e cópias- os objetos são repetidos no vetor, use uma função pra declarar os objetos direto no quarto. 
 
 Difícil. Passo 11: Room, objetos e personagem gerados por um arquivo .txt (controller)
 
