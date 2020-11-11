@@ -11,22 +11,86 @@
 //
 
 //MODEL-------------------------------------------------------------------------
-class UI{
+
+
+//!!!!!!!!!!!!!!-----------------------------------------------------------------
+class SpriteSimples{
 private:
-std::vector<std::string> messagesVector;
-
-
-
+int posX,posY;//posicao do canto inferior esquerdo do sprite.
+int sizeX,sizeY;
+std::string spritePath;//caminho para o arquivo da sprite
+bool isCollider;
+bool isLinker;
+std::string linkPath;
+public:
+void SpriteData(int px, int py, int sx, int sy , std::string sp);
+int getPosX();
+int getPosY();
+int getSizeX();
+int getSizeY();
+std::string getSpritePath();
+void setCollider();
+bool getCollider();
+void setLinker(std::string path);
+bool getIsLinker();
+std::string getLinkPath();
 };
 
-class Objeto{
+std::string SpriteSimples::getLinkPath(){
+  return this->linkPath;
+}
+
+bool SpriteSimples::getIsLinker(){
+  return this->isLinker;
+}
+
+void SpriteSimples::setLinker(std::string path){
+  this->isLinker = true;
+  this->linkPath = path;
+}
+
+
+bool SpriteSimples::getCollider(){
+  return this->isCollider;
+}
+void SpriteSimples::setCollider(){
+  this->isCollider = true;
+}
+
+void SpriteSimples::SpriteData(int px, int py, int sx, int sy , std::string sp){
+this->posX = px;
+this->posY = py;
+this->sizeX = sx;
+this->sizeY = sy;
+this->spritePath = sp;//caminho para o arquivo de imagem da sprite
+this->isCollider = false;
+this->isLinker = false;
+}
+
+int SpriteSimples::getPosX(){
+  return this->posX;
+}
+int SpriteSimples::getPosY(){
+  return this->posY;
+}
+int SpriteSimples::getSizeX(){
+  return this->sizeX;
+}
+int SpriteSimples::getSizeY(){
+  return this->sizeY;
+}
+std::string SpriteSimples::getSpritePath(){
+  return this->spritePath;
+}
+//-!!!!!!!!!!!!-----------------------------------------------------------------
+
+class Player{
 private:
 int posX,posY;//posicao do canto inferior esquerdo do sprite.
 int sizeX,sizeY;
 int vel; //unidades somadas a posicao em cada frame
 int velMax;//velocidade andando
 int dir; //0 - Norte 1- Nordeste 2- Leste 3- Sudeste 4- Sul 5- Sudoeste 6- Oeste 7- Noroeste
-int colliderX, colliderY;//collider a partir do canto inferior esquerdo do sprite
 std::string spritePath;//caminho para o arquivo da sprite
 std::vector<int> spritePointsX;//pontos topleft da sprite
 std::vector<int> spritePointsY;//pontos topleft da sprite
@@ -34,18 +98,14 @@ int spriteSizeX;
 int spriteSizeY;
 int estadoSprite;
 int estadoSpriteTimer;
-bool isCollider;
-bool isLinker;
 bool linkPendente;
 std::string linkPath;
 public:
-void ObjetoData(int px, int py, int sx, int sy, int colx, int coly, std::string sp, int velIni, int velMaxIni, int dirIni);
+void PlayerData(int px, int py, int sx, int sy, std::string sp, int velIni, int velMaxIni, int dirIni);
 int getPosX();
 int getPosY();
 int getSizeX();
 int getSizeY();
-int getColX();
-int getColY();
 int getVel();
 void setVel(int novaVel);
 int getDir();
@@ -65,8 +125,6 @@ int getEstadoSprite();
 void incEstadoTimer();
 int getEstadoTimer();
 void resetEstadoTimer();
-void setCollider();
-bool getCollider();
 void setLinker(std::string path);
 bool getIsLinker();
 std::string getLinkPath();
@@ -74,163 +132,152 @@ bool getLinkPendente();
 void setLinkPendente(std::string path);
 };
 
-void Objeto::setLinkPendente(std::string path){
+void Player::setLinkPendente(std::string path){
   this->linkPath = path;
   this->linkPendente = true;
 }
 
-bool Objeto::getLinkPendente(){
+bool Player::getLinkPendente(){
   return this->linkPendente;
 }
 
-std::string Objeto::getLinkPath(){
+std::string Player::getLinkPath(){
   this->linkPendente = false;
   return this->linkPath;
 }
 
-bool Objeto::getIsLinker(){
-  return this->isLinker;
-}
 
-
-void Objeto::setLinker(std::string path){
-  this->isLinker = true;
+void Player::setLinker(std::string path){
   this->linkPath = path;
 }
 
-
-bool Objeto::getCollider(){
-  return this->isCollider;
-}
-void Objeto::setCollider(){
-  this->isCollider = true;
-}
-
-void Objeto::resetEstadoTimer(){
+void Player::resetEstadoTimer(){
   this->estadoSpriteTimer = 0;
 }
 
-void Objeto::incEstadoTimer(){
+void Player::incEstadoTimer(){
   this->estadoSpriteTimer = this->estadoSpriteTimer + 1;
 }
-int Objeto::getEstadoTimer(){
+int Player::getEstadoTimer(){
   return this->estadoSpriteTimer;
 }
 
 
-void Objeto::setEstadoSprite(int i){
+void Player::setEstadoSprite(int i){
   this->estadoSprite = i;
 }
-int Objeto::getEstadoSprite(){
+int Player::getEstadoSprite(){
   return this->estadoSprite;
 }
-int Objeto::getSpriteSizeY(){
+int Player::getSpriteSizeY(){
   return this->spriteSizeY;
 }
-int Objeto::getSpriteSizeX(){
+int Player::getSpriteSizeX(){
   return this->spriteSizeX;
 }
-void Objeto::setSpriteSize(int nx, int ny){
+void Player::setSpriteSize(int nx, int ny){
   this->spriteSizeX = nx;
   this->spriteSizeY = ny;
 }
 
 
 
-int Objeto::getSpritePointX(int n){
+int Player::getSpritePointX(int n){
 return this->spritePointsX[n];
 }
-int Objeto::getSpritePointY(int n){
+int Player::getSpritePointY(int n){
 return this->spritePointsY[n];
 }
 
 
-void Objeto::addSpritePoint(int ix, int iy){
+void Player::addSpritePoint(int ix, int iy){
 this->spritePointsX.push_back(ix);
 this->spritePointsY.push_back(iy);
 }
-void Objeto::ObjetoData(int px, int py, int sx, int sy, int colx, int coly, std::string sp, int velIni,int velMaxIni,int dirIni){
+void Player::PlayerData(int px, int py, int sx, int sy, std::string sp, int velIni, int velMaxIni, int dirIni){
 this->posX = px;
 this->posY = py;
 this->sizeX = sx;
 this->sizeY = sy;
-this->colliderX = colx;
-this->colliderY = coly;
 this->spritePath = sp;//caminho para o arquivo de imagem da sprite
 this->vel = velIni;
 this->velMax = velMaxIni;
 this->dir = dirIni;
 this->estadoSpriteTimer = 0;
-this->isCollider = false;
-this->isLinker = false;
 this->linkPendente = false;
 }
-int Objeto::getPosX(){
+int Player::getPosX(){
   return this->posX;
 }
-int Objeto::getPosY(){
+int Player::getPosY(){
   return this->posY;
 }
-int Objeto::getSizeX(){
+int Player::getSizeX(){
   return this->sizeX;
 }
-int Objeto::getSizeY(){
+int Player::getSizeY(){
   return this->sizeY;
 }
-int Objeto::getColX(){
-  return this->colliderX;
-}
-int Objeto::getColY(){
-  return this->colliderY;
-}
-std::string Objeto::getSpritePath(){
+
+std::string Player::getSpritePath(){
   return this->spritePath;
 }
-void Objeto::setVel(int novaVel){
+void Player::setVel(int novaVel){
   this->vel = novaVel;
 }
-int Objeto::getVel(){
+int Player::getVel(){
   return this->vel;
 }
-void Objeto::setDir(int novaDir){
+void Player::setDir(int novaDir){
   this->dir = novaDir;
 }
-int Objeto::getDir(){
+int Player::getDir(){
   return this->dir;
 }
-int Objeto::getVelMax(){
+int Player::getVelMax(){
   return this->velMax;
 }
-void Objeto::addPos(int nx, int ny){
+void Player::addPos(int nx, int ny){
   this->posX = this->posX + nx;
   this->posY = this->posY + ny;
 }
-void Objeto::subPos(int nx, int ny){
+void Player::subPos(int nx, int ny){
   this->posX = this->posX - nx;
   this->posY = this->posY - ny;
 }
 
+//!!!!!!!!!!!!!!!!!-------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Room {
 public:
 std::string roomName;
-std::vector<Objeto> roomObjects;
-Objeto & playerCharacter;
-Objeto & backgroundScene;
+std::vector<SpriteSimples> roomObjects;
+Player & playerCharacter;
+SpriteSimples & backgroundScene;
 //
-Room(std::string iroomName, Objeto & iplayerCharacter,Objeto & ibackgroundScene):roomName(iroomName), playerCharacter(iplayerCharacter), backgroundScene(ibackgroundScene){};
+Room(std::string iroomName, Player & iplayerCharacter,SpriteSimples & ibackgroundScene):roomName(iroomName), playerCharacter(iplayerCharacter), backgroundScene(ibackgroundScene){};
 void AddName(std::string iroomName);
-void AddObject(Objeto & objetoAdicionado);
+void AddObject(SpriteSimples & objetoAdicionado);
 
 };
-
-
-
 void Room::AddName(std::string iroomName)
 {
   this->roomName = iroomName;
 }
-
-void Room::AddObject(Objeto & objetoAdicionado)
+void Room::AddObject(SpriteSimples & objetoAdicionado)
 {
 
   this->roomObjects.push_back(objetoAdicionado);
@@ -645,45 +692,44 @@ int main(int argc, char* args[]){
 const float fps = 60;
 float millisecondsPerFrame =(1/fps)*1000;
 
-Objeto jogador;
-jogador.ObjetoData(175,450,62,116,10,10,"../assets/spriteplayer.png",0,3,0);
+Player jogador;
+jogador.PlayerData(175,450,62,116,"../assets/spriteplayer.png",0,3,0);
 jogador.setSpriteSize(31,58);
 jogador.addSpritePoint(2,2);jogador.addSpritePoint(39,2);jogador.addSpritePoint(76,2);jogador.addSpritePoint(2,66);jogador.addSpritePoint(39,66);jogador.addSpritePoint(76,66);jogador.addSpritePoint(2,130);jogador.addSpritePoint(39,130);jogador.addSpritePoint(76,130);jogador.addSpritePoint(2,194);jogador.addSpritePoint(39,194);jogador.addSpritePoint(76,194);
 
-Objeto fundoBar;
-fundoBar.ObjetoData(0,0,780,600,0,0,"../assets/spriteBar.png",0,5,0);
+SpriteSimples fundoBar;
+fundoBar.SpriteData(0,0,780,600,"../assets/spriteBar.png");
 
-Objeto colider;
-colider.ObjetoData(479,440,300,300,50,50,"../assets/spriteVazia.png",0,0,0);
+SpriteSimples colider;
+colider.SpriteData(479,440,300,300,"../assets/spriteVazia.png");
 colider.setCollider();
 
-Objeto colider2;
-colider2.ObjetoData(0,0,780,240,50,50,"../assets/spriteVazia.png",0,0,0);
+SpriteSimples colider2;
+colider2.SpriteData(0,0,780,240,"../assets/spriteVazia.png");
 colider2.setCollider();
 
-Objeto colider3;
-colider3.ObjetoData(0,0,50,600,50,50,"../assets/spriteVazia.png",0,0,0);
+SpriteSimples colider3;
+colider3.SpriteData(0,0,50,600,"../assets/spriteVazia.png");
 colider3.setCollider();
 
-Objeto colider4;
-colider4.ObjetoData(725,0,10,600,50,50,"../assets/spriteVazia.png",0,0,0);
+SpriteSimples colider4;
+colider4.SpriteData(725,0,10,600,"../assets/spriteVazia.png");
 colider4.setCollider();
 
-Objeto link;
-link.ObjetoData(155,600,140,60,50,50,"../assets/spriteVazia.png",0,0,0);
+SpriteSimples link;
+link.SpriteData(155,600,140,60,"../assets/spriteVazia.png");
 link.setCollider();
 link.setLinker("1");
 
+SpriteSimples stool;
+stool.SpriteData(423,420,30,51,"../assets/barStool.png");
 
-Objeto stool;
-stool.ObjetoData(423,420,30,51,0,0,"../assets/barStool.png",0,0,0);
-
-Objeto stool2;
-stool2.ObjetoData(423,470,30,51,0,0,"../assets/barStool.png",0,0,0);
+SpriteSimples stool2;
+stool2.SpriteData(423,470,30,51,"../assets/barStool.png");
 
 
-Objeto barCounter;
-barCounter.ObjetoData(0,0,780,600,0,0,"../assets/spriteBarCounter.png",0,5,0);
+SpriteSimples barCounter;
+barCounter.SpriteData(0,0,780,600,"../assets/spriteBarCounter.png");
 
 
 Room bar("", jogador, fundoBar);
@@ -699,23 +745,23 @@ bar.AddObject(link);
 
 //------------------------------------------------------------------------------
 
-Objeto jogador2;
-jogador2.ObjetoData(370,100,62,116,10,10,"../assets/spriteplayer.png",0,3,0);
+Player jogador2;
+jogador2.PlayerData(370,100,62,116,"../assets/spriteplayer.png",0,3,0);
 jogador2.setSpriteSize(31,58);
 jogador2.addSpritePoint(2,2);jogador2.addSpritePoint(39,2);jogador2.addSpritePoint(76,2);jogador2.addSpritePoint(2,66);jogador2.addSpritePoint(39,66);jogador2.addSpritePoint(76,66);jogador2.addSpritePoint(2,130);jogador2.addSpritePoint(39,130);jogador2.addSpritePoint(76,130);jogador2.addSpritePoint(2,194);jogador2.addSpritePoint(39,194);jogador2.addSpritePoint(76,194);
 
-Objeto fundoBar2;
-fundoBar2.ObjetoData(19,0,741,576,0,0,"../assets/spriteHall.png",0,5,0);
+SpriteSimples fundoBar2;
+fundoBar2.SpriteData(19,0,741,576,"../assets/spriteHall.png");
 
-Objeto link2;
-link2.ObjetoData(340,40,100,20,50,50,"../assets/radio.jpg",0,0,0);
+SpriteSimples link2;
+link2.SpriteData(340,40,100,20,"../assets/radio.jpg");
 link2.setCollider();
 link2.setLinker("0");
 
 
 
-Objeto arco;
-arco.ObjetoData(283,0,213,243,0,0,"../assets/spriteArco.png",0,0,0);
+SpriteSimples arco;
+arco.SpriteData(283,0,213,243,"../assets/spriteArco.png");
 
 Room bar2(":.ENTRADA.:", jogador2, fundoBar2);
 bar2.AddObject(link2);
@@ -727,7 +773,7 @@ bar2.AddObject(arco);
 
 
 
-int vetorRoom = 0;
+int vetorRoom = 1;
 std::vector<Room> gameRooms;
 gameRooms.push_back(bar);
 gameRooms.push_back(bar2);
