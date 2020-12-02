@@ -12,7 +12,7 @@
 /*---------------------------MODEL------------------------------------------------*/
 
 // Classe Sprites Simples:
-class SpriteSimples{ 
+class SpriteSimples{
 	private:
 		int posX,posY;//posicao do canto inferior esquerdo do sprite.
 		int sizeX,sizeY;
@@ -263,7 +263,7 @@ void Player::subPos(int nx, int ny){
 }
 
 
-// Classe Room: 
+// Classe Room:
 class Room {
 	public:
 		std::string roomName;
@@ -322,7 +322,7 @@ int View::initView(int posX, int posY, int sizeX, int sizeY){
     std::cout << "Fail:" << SDL_GetError() << std::endl;
     return -1;
   }
-  
+
   //Criando Janela
   window = SDL_CreateWindow("Unicamp Hotel", posX,posY,sizeX,sizeY,0);
 
@@ -337,7 +337,7 @@ int View::initView(int posX, int posY, int sizeX, int sizeY){
     std::cout << "Erro: " << SDL_GetError();
     return -1;
   }
-  
+
   //Setando resolucao
   SDL_RenderSetLogicalSize(renderer, sizeX, sizeY);
 
@@ -349,10 +349,10 @@ int View::initView(int posX, int posY, int sizeX, int sizeY){
 void View::setUpTexture(Room & lugar){
   targetPlayer.w = lugar.playerCharacter.getSizeX();
   targetPlayer.h = lugar.playerCharacter.getSizeY();
-  
+
   targetBackground.w = lugar.backgroundScene.getSizeX();
   targetBackground.h = lugar.backgroundScene.getSizeY();
-  
+
   targetPlayerSprite.w = lugar.playerCharacter.getSpriteSizeX();
   targetPlayerSprite.h = lugar.playerCharacter.getSpriteSizeY();
   targetPlayerSprite.x = lugar.playerCharacter.getSpritePointX(0);
@@ -383,10 +383,10 @@ void View::resetTexture(){
 void View::render(Room & lugar){
   targetPlayer.x = lugar.playerCharacter.getPosX();
   targetPlayer.y = lugar.playerCharacter.getPosY();
-  
+
   targetPlayerSprite.x = lugar.playerCharacter.getSpritePointX(lugar.playerCharacter.getEstadoSprite());
   targetPlayerSprite.y = lugar.playerCharacter.getSpritePointY(lugar.playerCharacter.getEstadoSprite());
-  
+
   targetBackground.x = lugar.backgroundScene.getPosX();
   targetBackground.y = lugar.backgroundScene.getPosY();
 
@@ -436,7 +436,7 @@ class Controller {
 		const Uint8* state = SDL_GetKeyboardState(nullptr); // estado do teclado
 		// Controlador:
 		bool rodando = true;
-		
+
 	public:
 		bool getRodando();
 		void updateInput();
@@ -486,7 +486,7 @@ void Controller::updatePlayer(Room & lugar){
 	if (this->state[SDL_SCANCODE_LEFT] && umaDirecao){
 		umaDirecao = false;
 		parado = false;
-		
+
 		if(conflito == false || direcaoConflito == 2){
 		lugar.playerCharacter.setDir(6);
 		lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
@@ -634,7 +634,7 @@ void Controller::updatePlayer(Room & lugar){
 				}
 			}
 		}
-		
+
 		lugar.playerCharacter.resetEstadoTimer();
 	}
 }
@@ -661,6 +661,7 @@ int main(int argc, char* args[]){
 	//MODEL
 	const float fps = 60;
 	float millisecondsPerFrame =(1/fps)*1000;
+
 
 	Player jogador;
 	jogador.PlayerData(175,450,62,116,"../assets/spriteplayer.png",0,3,0);
@@ -722,18 +723,72 @@ int main(int argc, char* args[]){
 	fundoBar2.SpriteData(19,0,741,576,"../assets/spriteHall.png");
 
 	SpriteSimples link2;
-	link2.SpriteData(340,40,100,20,"../assets/radio.jpg");
+	link2.SpriteData(290,40,200,20,"../assets/radio.jpg");
 	link2.setCollider();
 	link2.setLinker("0");
+
+
 
 	SpriteSimples arco;
 	arco.SpriteData(283,0,213,243,"../assets/spriteArco.png");
 
+	SpriteSimples colider5;
+	colider5.SpriteData(0,560,800,800,"../assets/radio.jpg");
+	colider5.setCollider();
+
+	SpriteSimples colider6;
+	colider6.SpriteData(0,0,40,600,"../assets/spriteVazia.png");
+	colider6.setCollider();
+
+	SpriteSimples colider7;
+	colider7.SpriteData(740,0,50,800,"../assets/spriteVazia.png");
+	colider7.setCollider();
+
+	SpriteSimples colider8;
+	colider8.SpriteData(0,0,290,260,"../assets/spriteVazia.jpg");
+	colider8.setCollider();
+
+	SpriteSimples colider9;
+	colider9.SpriteData(480,0,290,260,"../assets/spriteVazia.jpg");
+	colider9.setCollider();
+
+	SpriteSimples colider10;
+	colider10.SpriteData(520,125,50,260,"../assets/spriteVazia.jpg");
+	colider10.setCollider();
+
 	Room bar2(":.ENTRADA.:", jogador2, fundoBar2);
 	bar2.AddObject(link2);
 	bar2.AddObject(arco);
-
+	bar2.AddObject(colider5);
+	bar2.AddObject(colider6);
+	bar2.AddObject(colider7);
+	bar2.AddObject(colider8);
+	bar2.AddObject(colider9);
+	bar2.AddObject(colider10);
 	//------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//----------------------------------------------------------------------------
 
 	int vetorRoom = 1;
 	std::vector<Room> gameRooms;
@@ -773,7 +828,7 @@ int main(int argc, char* args[]){
 		}
 		janela.render(gameRooms[vetorRoom]);
 		//GAME LOOP!----------------------------------------
-		
+
 	}
 
 	SDL_Quit();
