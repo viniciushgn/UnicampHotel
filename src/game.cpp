@@ -188,6 +188,9 @@ void Player::setSpriteSize(int nx, int ny){
 }
 
 int Player::getSpritePointX(int n){
+	if(n > this->spritePointsX.size()){
+		printf("erro aqui\n");
+	}
 	return this->spritePointsX[n];
 }
 
@@ -210,6 +213,7 @@ void Player::PlayerData(int px, int py, int sx, int sy, std::string sp, int velI
 	this->velMax = velMaxIni;
 	this->dir = dirIni;
 	this->estadoSpriteTimer = 0;
+	this->estadoSprite = 0;
 	this->linkPendente = false;
 }
 
@@ -727,6 +731,11 @@ int main(int argc, char* args[]){
 	link2.setCollider();
 	link2.setLinker("0");
 
+	SpriteSimples link3;
+	link3.SpriteData(290,300,200,20,"../assets/radio.jpg");
+	link3.setCollider();
+	link3.setLinker("2");
+
 
 
 	SpriteSimples arco;
@@ -765,7 +774,19 @@ int main(int argc, char* args[]){
 	bar2.AddObject(colider8);
 	bar2.AddObject(colider9);
 	bar2.AddObject(colider10);
+ 	bar2.AddObject(link3);
+
 	//------------------------------------------------------------------------------
+
+	Player jogador3;
+	jogador3.PlayerData(370,100,62,116,"../assets/spriteplayer.png",0,3,0);
+	jogador3.setSpriteSize(31,58);
+	jogador3.addSpritePoint(2,2);jogador3.addSpritePoint(39,2);jogador3.addSpritePoint(76,2);jogador3.addSpritePoint(2,66);jogador3.addSpritePoint(39,66);jogador3.addSpritePoint(76,66);jogador3.addSpritePoint(2,130);jogador3.addSpritePoint(39,130);jogador3.addSpritePoint(76,130);jogador3.addSpritePoint(2,194);jogador3.addSpritePoint(39,194);jogador3.addSpritePoint(76,194);
+
+	SpriteSimples fundoBar3;
+	fundoBar3.SpriteData(19,0,741,576,"../assets/spriteHall.png");
+
+	Room bar3(":.ABACAXI.:", jogador3, fundoBar3);
 
 
 
@@ -794,6 +815,7 @@ int main(int argc, char* args[]){
 	std::vector<Room> gameRooms;
 	gameRooms.push_back(bar);
 	gameRooms.push_back(bar2);
+	gameRooms.push_back(bar3);
 
 	//VIEW
 	View janela;
@@ -812,8 +834,8 @@ int main(int argc, char* args[]){
 		}
 		else{
 			if(spentOnFrame.count() > millisecondsPerFrame*50){
-				SDL_QUIT;
-				return 0;
+				//SDL_QUIT;
+			//	return 0;
 			}
 		}
 		tInicial = std::chrono::system_clock::now();
