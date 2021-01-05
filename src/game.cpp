@@ -7,7 +7,10 @@
 #include <string>
 #include <chrono>//tempo para igualar o periodo de cada game loop
 #include <thread>// std::this_thread::sleep_for
-
+//
+#include "json.hpp"
+using nlohmann::json;
+//
 
 /*---------------------------MODEL------------------------------------------------*/
 
@@ -447,6 +450,7 @@ class Controller {
 		const Uint8* getState();
 		void updatePlayer(Room & lugar);
 		bool updateRoom(Room & lugar, int & vetorAtual);
+		void updateSaveFile(json & tst,	std::vector<Room> & gameRooms);
 };
 
 bool Controller::getRodando(){
@@ -653,6 +657,9 @@ bool Controller::updateRoom(Room & lugar, int & vetorAtual){
   }
 }
 
+void Controller::updateSaveFile(json & tst,	std::vector<Room> & gameRooms){
+tst["gameRooms"] = gameRooms;
+}
 
 /*---------------------------------------------------------------------*/
 
@@ -824,6 +831,10 @@ int main(int argc, char* args[]){
 	Controller controle;
 
 	//CONTROLLER
+
+//save
+json snapshot;
+
 	while(controle.getRodando()){
 		tFinal = std::chrono::system_clock::now();
 		std::chrono::duration<double, std::milli> spentOnFrame = tFinal - tInicial;
