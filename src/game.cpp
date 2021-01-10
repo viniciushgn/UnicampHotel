@@ -14,6 +14,56 @@ using nlohmann::json;
 
 /*---------------------------MODEL------------------------------------------------*/
 
+class multiplayerSprite{
+private:
+	int posX,posY; //posicao do canto inferior esquerdo do sprite
+	int sizeX,sizeY;
+	std::string spritePath;
+	int spritePosX, spritePosY;
+	int spriteSizeX, spriteSizeY;
+	int ID;
+	int indexLocal;
+public:
+	multiplayerSprite(int inputPosX, int inputPosY, int inputSizeX, int inputSizeY,
+	std::string inputSpritePath, int inputSpritePosX, int inputSpritePosY, int inputSpriteSizeX, int inputSpriteSizeY, int nID, int nIndexLocal );
+  void updateSprite(int nposX, int nposY, int nsizeX, int nsizeY, int nspritePosX, int nspritePosY, int nindexLocal);
+
+};
+
+multiplayerSprite::multiplayerSprite(int inputPosX, int inputPosY, int inputSizeX,
+int inputSizeY,std::string inputSpritePath, int inputSpritePosX, int inputSpritePosY,
+int inputSpriteSizeX, int inputSpriteSizeY, int nID, int nIndexLocal){
+
+this->posX = inputPosX;
+this->posY = inputPosY;
+this->sizeX = inputSizeX;
+this->sizeY = inputSizeY;
+this->spritePath = inputSpritePath;
+this->spritePosX = inputSpritePosX;
+this->spritePosY = inputSpritePosY;
+this->spriteSizeX = inputSpriteSizeX;
+this->spriteSizeY = inputSpriteSizeY;
+this->ID = nID;
+this->indexLocal = nIndexLocal;
+
+}
+
+void multiplayerSprite::updateSprite(int nposX, int nposY, int nsizeX, int nsizeY, int nspritePosX, int nspritePosY, int nindexLocal){
+	this->posX = nposX;
+	this->posY = nposY;
+	this->sizeX = nsizeX;
+	this->sizeY = nsizeY;
+	this->spritePosX = nspritePosX;
+	this->spritePosY = nspritePosY;
+	this->indexLocal = nindexLocal;
+}
+
+
+
+
+
+
+
 // Classe Sprites Simples:
 class SpriteSimples{
 	private:
@@ -311,12 +361,19 @@ class View {
 		SDL_Rect targetObjetos;
 		std::vector<SDL_Texture *> textureObjetos;
 
+		SDL_Rect targetNPC;
+		std::vector<SDL_Texture *> textureNPC;
+
 	public:
 		int initView(int posX, int posY, int sizeX, int sizeY);
 		void setUpTexture(Room & lugar);
 		void resetTexture();
 		void render(Room & lugar);
 		void changeName(Room & lugar);
+
+		void setUpNPC(volatile std::vector<multiplayerSprite> & nlistaDeJogadores);
+		void resetNPC();
+		void renderNPC(	volatile std::vector<multiplayerSprite> listaDeJogadores);
 };
 
 void View::changeName(Room & lugar){
@@ -429,6 +486,9 @@ void View::render(Room & lugar){
 	//SWAP
   SDL_RenderPresent(renderer);
 }
+
+
+
 
 /*--------------------------------------------------------------------------------*/
 
@@ -658,7 +718,7 @@ bool Controller::updateRoom(Room & lugar, int & vetorAtual){
 }
 
 void Controller::updateSaveFile(json & tst,	std::vector<Room> & gameRooms){
-tst["gameRooms"] = gameRooms;
+//tst["gameRooms"] = gameRooms;
 }
 
 /*---------------------------------------------------------------------*/
@@ -739,7 +799,7 @@ int main(int argc, char* args[]){
 	link2.setLinker("0");
 
 	SpriteSimples link3;
-	link3.SpriteData(290,300,200,20,"../assets/radio.jpg");
+	link3.SpriteData(290,600,200,20,"../assets/radio.jpg");
 	link3.setCollider();
 	link3.setLinker("2");
 
@@ -793,7 +853,7 @@ int main(int argc, char* args[]){
 	SpriteSimples fundoBar3;
 	fundoBar3.SpriteData(19,0,741,576,"../assets/spriteHall.png");
 
-	Room bar3(":.ABACAXI.:", jogador3, fundoBar3);
+	Room bar3(":.LIMBO.:", jogador3, fundoBar3);
 
 
 
@@ -818,8 +878,12 @@ int main(int argc, char* args[]){
 
 	//----------------------------------------------------------------------------
 
+
+
 	int vetorRoom = 1;
 	std::vector<Room> gameRooms;
+	volatile std::vector<multiplayerSprite> listaDeJogadores;
+
 	gameRooms.push_back(bar);
 	gameRooms.push_back(bar2);
 	gameRooms.push_back(bar3);
