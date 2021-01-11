@@ -15,7 +15,7 @@ using nlohmann::json;
 /*---------------------------MODEL------------------------------------------------*/
 
 class multiplayerSprite{
-private:
+public:
 	int posX,posY; //posicao do canto inferior esquerdo do sprite
 	int sizeX,sizeY;
 	std::string spritePath;
@@ -23,7 +23,7 @@ private:
 	int spriteSizeX, spriteSizeY;
 	int ID;
 	int indexLocal;
-public:
+
 	multiplayerSprite(int inputPosX, int inputPosY, int inputSizeX, int inputSizeY,
 	std::string inputSpritePath, int inputSpritePosX, int inputSpritePosY, int inputSpriteSizeX, int inputSpriteSizeY, int nID, int nIndexLocal );
   void updateSprite(int nposX, int nposY, int nsizeX, int nsizeY, int nspritePosX, int nspritePosY, int nindexLocal);
@@ -362,25 +362,48 @@ class View {
 		std::vector<SDL_Texture *> textureObjetos;
 
 		SDL_Rect targetNPC;
+		SDL_Rect targetNPCSprite;
 		std::vector<SDL_Texture *> textureNPC;
+		int indexPlayer;
 
 	public:
 		int initView(int posX, int posY, int sizeX, int sizeY);
 		void setUpTexture(Room & lugar);
 		void resetTexture();
-		void render(Room & lugar);
+		void render(Room & lugar, std::vector<multiplayerSprite> & nlistaDeJogadores);
 		void changeName(Room & lugar);
+		void setindexPlayer(int nindex);
 
-		void setUpNPC(volatile std::vector<multiplayerSprite> & nlistaDeJogadores);
+		void setUpNPC(std::vector<multiplayerSprite> nlistaDeJogadores);
 		void resetNPC();
-		void renderNPC(	volatile std::vector<multiplayerSprite> listaDeJogadores);
+		void renderNPC( std::vector<multiplayerSprite> listaDeJogadores);
 };
+
+
+void View::setindexPlayer(int nindex){
+	this->indexPlayer = nindex;
+}
+
+void View::setUpNPC(std::vector<multiplayerSprite> nlistaDeJogadores){
+for(int iterator = 0; iterator < nlistaDeJogadores.size(); iterator++){
+	if(nlistaDeJogadores[iterator].indexLocal == this->indexPlayer){
+	textureNPC.push_back(IMG_LoadTexture(renderer, nlistaDeJogadores[iterator].spritePath.c_str()));
+}
+}
+}
+
+void View::resetNPC(){
+this->textureNPC.clear();
+}
+
+
 
 void View::changeName(Room & lugar){
 	SDL_SetWindowTitle(this->window, lugar.roomName.c_str());
 }
 
 int View::initView(int posX, int posY, int sizeX, int sizeY){
+	this->indexPlayer = 0;
   //Inicializando SDL
   if( SDL_Init(SDL_INIT_EVERYTHING) != 0){
     std::cout << "Fail:" << SDL_GetError() << std::endl;
@@ -444,7 +467,7 @@ void View::resetTexture(){
   this->textureObjetos.clear();
 }
 
-void View::render(Room & lugar){
+void View::render(Room & lugar, std::vector<multiplayerSprite> & nlistaDeJogadores ){
   targetPlayer.x = lugar.playerCharacter.getPosX();
   targetPlayer.y = lugar.playerCharacter.getPosY();
 
@@ -482,6 +505,28 @@ void View::render(Room & lugar){
 		  }
 		}
 	}
+
+//NPC-------------------------------------------------------------
+for(int iterator = 0; iterator < nlistaDeJogadores.size(); iterator++){
+
+	if(nlistaDeJogadores[iterator].indexLocal == this->indexPlayer){
+	targetNPC.x = nlistaDeJogadores[iterator].posX;
+	targetNPC.y = nlistaDeJogadores[iterator].posY;
+	targetNPC.w = nlistaDeJogadores[iterator].sizeX;
+	targetNPC.h = nlistaDeJogadores[iterator].sizeY;
+
+	targetNPCSprite.x = nlistaDeJogadores[iterator].spritePosX;
+	targetNPCSprite.y = nlistaDeJogadores[iterator].spritePosY;
+	targetNPCSprite.w = nlistaDeJogadores[iterator].spriteSizeX;
+	targetNPCSprite.h = nlistaDeJogadores[iterator].spriteSizeY;
+
+
+	SDL_RenderCopy(renderer, textureNPC[iterator], &targetNPCSprite, &targetNPC);
+
+}
+}
+//----------------------------------------------------------------
+
 
 	//SWAP
   SDL_RenderPresent(renderer);
@@ -858,21 +903,7 @@ int main(int argc, char* args[]){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+multiplayerSprite teste(370,100,62,116,"../assets/spriteplayer.png", 2,2,31,58,583,1);
 
 
 
@@ -882,7 +913,8 @@ int main(int argc, char* args[]){
 
 	int vetorRoom = 1;
 	std::vector<Room> gameRooms;
-	volatile std::vector<multiplayerSprite> listaDeJogadores;
+	std::vector<multiplayerSprite> listaDeJogadores;
+	listaDeJogadores.push_back(teste);
 
 	gameRooms.push_back(bar);
 	gameRooms.push_back(bar2);
@@ -922,8 +954,11 @@ json snapshot;
 			janela.resetTexture();
 			janela.setUpTexture(gameRooms[vetorRoom]);
 			janela.changeName(gameRooms[vetorRoom]);
+			janela.setindexPlayer(vetorRoom);
+			janela.resetNPC();
+			janela.setUpNPC(listaDeJogadores);
 		}
-		janela.render(gameRooms[vetorRoom]);
+		janela.render(gameRooms[vetorRoom], listaDeJogadores);
 		//GAME LOOP!----------------------------------------
 
 	}
