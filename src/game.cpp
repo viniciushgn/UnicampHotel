@@ -26,7 +26,7 @@ public:
 
 	multiplayerSprite(int inputPosX, int inputPosY, int inputSizeX, int inputSizeY,
 	std::string inputSpritePath, int inputSpritePosX, int inputSpritePosY, int inputSpriteSizeX, int inputSpriteSizeY, int nID, int nIndexLocal );
-  void updateSprite(int nposX, int nposY, int nsizeX, int nsizeY, int nspritePosX, int nspritePosY, int nindexLocal);
+  void updateSprite(int nposX, int nposY, int nsizeX, int nsizeY, int nspritePosX, int nspritePosY, int nspriteSizeX, int nSpriteSizeY, int nindexLocal, int nID);
 
 };
 
@@ -48,14 +48,18 @@ this->indexLocal = nIndexLocal;
 
 }
 
-void multiplayerSprite::updateSprite(int nposX, int nposY, int nsizeX, int nsizeY, int nspritePosX, int nspritePosY, int nindexLocal){
+void multiplayerSprite::updateSprite(int nposX, int nposY, int nsizeX, int nsizeY, int nspritePosX, int nspritePosY, int nspriteSizeX, int nSpriteSizeY, int nindexLocal, int nID){
 	this->posX = nposX;
 	this->posY = nposY;
 	this->sizeX = nsizeX;
 	this->sizeY = nsizeY;
 	this->spritePosX = nspritePosX;
 	this->spritePosY = nspritePosY;
+	this->spriteSizeX = nspriteSizeX;
+	this->spriteSizeY = nSpriteSizeY;
+	this->ID = nID;
 	this->indexLocal = nindexLocal;
+
 }
 
 
@@ -186,7 +190,25 @@ class Player{
 		std::string getLinkPath();
 		bool getLinkPendente();
 		void setLinkPendente(std::string path);
+
+		std::string returnPacket(int local, int id);
 };
+
+
+std::string Player::returnPacket(int local, int id){
+
+std::string pack = "\n" + std::to_string(this->posX) + "\n" + std::to_string(this->posY)
++ "\n" + std::to_string(this->sizeX) + "\n" + std::to_string(this->sizeY) + "\n"
+
++ std::to_string(this->spritePointsX[this->estadoSprite]) + "\n" + std::to_string(this->spritePointsY[this->estadoSprite]) + "\n"
+
++ std::to_string(this->spriteSizeX) + "\n" + std::to_string(this->spriteSizeY) + "\n"
++ std::to_string(local) + "\n" + std::to_string(id);
+
+return pack;
+
+}
+
 
 void Player::setLinkPendente(std::string path){
   this->linkPath = path;
@@ -905,8 +927,6 @@ int main(int argc, char* args[]){
 
 multiplayerSprite teste(370,100,62,116,"../assets/spriteplayer.png", 2,2,31,58,583,1);
 
-
-
 	//----------------------------------------------------------------------------
 
 
@@ -960,7 +980,12 @@ json snapshot;
 		}
 		janela.render(gameRooms[vetorRoom], listaDeJogadores);
 		//GAME LOOP!----------------------------------------
+		//MULTIPLAYER LOOP!---------------------------------
 
+
+
+
+		//MULTIPLAYER LOOP!---------------------------------
 	}
 
 	SDL_Quit();
