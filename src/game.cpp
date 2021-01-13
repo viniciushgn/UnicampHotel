@@ -7,10 +7,13 @@
 #include <string>
 #include <chrono>//tempo para igualar o periodo de cada game loop
 #include <thread>// std::this_thread::sleep_for
+#include <memory>//lidar com threads
+
 //
 #include <boost/asio.hpp> //MULTIPLAYER
 using boost::asio::ip::udp;
-//
+
+#include <sstream>//Parse da string recebida pelo server
 
 /*---------------------------MODEL------------------------------------------------*/
 
@@ -25,14 +28,14 @@ public:
 	int indexLocal;
 
 	multiplayerSprite(int inputPosX, int inputPosY, int inputSizeX, int inputSizeY,
-	std::string inputSpritePath, int inputSpritePosX, int inputSpritePosY, int inputSpriteSizeX, int inputSpriteSizeY, int nID, int nIndexLocal );
+	std::string inputSpritePath, int inputSpritePosX, int inputSpritePosY, int inputSpriteSizeX, int inputSpriteSizeY, int nIndexLocal, int nID );
   void updateSprite(int nposX, int nposY, int nsizeX, int nsizeY, int nspritePosX, int nspritePosY, int nspriteSizeX, int nSpriteSizeY, int nindexLocal, int nID);
 
 };
 
 multiplayerSprite::multiplayerSprite(int inputPosX, int inputPosY, int inputSizeX,
 int inputSizeY,std::string inputSpritePath, int inputSpritePosX, int inputSpritePosY,
-int inputSpriteSizeX, int inputSpriteSizeY, int nID, int nIndexLocal){
+int inputSpriteSizeX, int inputSpriteSizeY, int nIndexLocal, int nID){
 
 this->posX = inputPosX;
 this->posY = inputPosY;
@@ -61,6 +64,64 @@ void multiplayerSprite::updateSprite(int nposX, int nposY, int nsizeX, int nsize
 	this->indexLocal = nindexLocal;
 
 }
+
+
+class Multiplayer{
+private:
+	std::vector<multiplayerSprite> listaDeJogadores;
+public:
+void updatePlayer( udp::socket meu_socket, udp::endpoint remote_endpoint);
+std::vector<multiplayerSprite> getListaDeJogadores();
+};
+
+std::vector<multiplayerSprite> Multiplayer::getListaDeJogadores(){
+	return this->listaDeJogadores;
+}
+
+void Multiplayer::updatePlayer( udp::socket meu_socket, udp::endpoint remote_endpoint){
+
+
+	char recv[122];
+	meu_socket.receive_from(boost::asio::buffer(recv, 122), remote_endpoint);
+	std::string recebida(recv);
+
+	int idRecebida;
+	bool atualizei = 0;
+	std::vector<std::string> parsed;
+	std::stringstream ss(recebida);
+
+
+
+
+	while (ss.good()) {
+	  std::string substr;
+	  std::getline(ss, substr, ',');
+	  parsed.push_back(substr);
+	  }
+
+
+		idRecebida = std::stoi(parsed[8]);
+
+	for(int n = 0; n < listaDeJogadores.size() && !atualizei; n++){
+		if(listaDeJogadores[n].ID == idRecebida){
+			listaDeJogadores[n].updateSprite(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]), std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
+			atualizei = 1;
+			}
+	}
+
+
+
+	if(!atualizei){
+		multiplayerSprite adicionar(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]),"../assets/spriteplayer.png", std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
+		listaDeJogadores.push_back(adicionar);
+	}
+
+
+
+}
+
+
+
 
 
 
@@ -197,13 +258,13 @@ class Player{
 
 std::string Player::returnPacket(int local, int id){
 
-std::string pack = "\n" + std::to_string(this->posX) + "\n" + std::to_string(this->posY)
-+ "\n" + std::to_string(this->sizeX) + "\n" + std::to_string(this->sizeY) + "\n"
+std::string pack = std::to_string(this->posX) + "," + std::to_string(this->posY)
++ "," + std::to_string(this->sizeX) + "," + std::to_string(this->sizeY) + ","
 
-+ std::to_string(this->spritePointsX[this->estadoSprite]) + "\n" + std::to_string(this->spritePointsY[this->estadoSprite]) + "\n"
++ std::to_string(this->spritePointsX[this->estadoSprite]) + "," + std::to_string(this->spritePointsY[this->estadoSprite]) + ","
 
-+ std::to_string(this->spriteSizeX) + "\n" + std::to_string(this->spriteSizeY) + "\n"
-+ std::to_string(local) + "\n" + std::to_string(id);
++ std::to_string(this->spriteSizeX) + "," + std::to_string(this->spriteSizeY) + ","
++ std::to_string(local) + "," + std::to_string(id);
 
 return pack;
 
@@ -392,7 +453,7 @@ class View {
 		int initView(int posX, int posY, int sizeX, int sizeY);
 		void setUpTexture(Room & lugar);
 		void resetTexture();
-		void render(Room & lugar, std::vector<multiplayerSprite> & nlistaDeJogadores);
+		void render(Room & lugar, std::vector<multiplayerSprite>  nlistaDeJogadores);
 		void changeName(Room & lugar);
 		void setindexPlayer(int nindex);
 
@@ -489,7 +550,7 @@ void View::resetTexture(){
   this->textureObjetos.clear();
 }
 
-void View::render(Room & lugar, std::vector<multiplayerSprite> & nlistaDeJogadores ){
+void View::render(Room & lugar, std::vector<multiplayerSprite> nlistaDeJogadores ){
   targetPlayer.x = lugar.playerCharacter.getPosX();
   targetPlayer.y = lugar.playerCharacter.getPosY();
 
@@ -953,16 +1014,12 @@ int main(int argc, char* args[]){
 
 
 
-multiplayerSprite teste(370,100,62,116,"../assets/spriteplayer.png", 2,2,31,58,583,1);
-
 	//----------------------------------------------------------------------------
 
 
 
 	int vetorRoom = 1;
 	std::vector<Room> gameRooms;
-	std::vector<multiplayerSprite> listaDeJogadores;
-	listaDeJogadores.push_back(teste);
 
 	gameRooms.push_back(bar);
 	gameRooms.push_back(bar2);
@@ -972,13 +1029,16 @@ multiplayerSprite teste(370,100,62,116,"../assets/spriteplayer.png", 2,2,31,58,5
 	View janela;
 	janela.initView(100,100,780,600);
 	janela.setUpTexture(gameRooms[vetorRoom]);
-	Controller controle;
-
 	//CONTROLLER
-
+	Controller controle;
+	Multiplayer controleMultiplayer;
 
 
 	while(controle.getRodando()){
+
+
+		std::thread threadMultiplayer(&Multiplayer::updatePlayer,&controleMultiplayer,meu_socket,remote_endpoint);
+
 		tFinal = std::chrono::system_clock::now();
 		std::chrono::duration<double, std::milli> spentOnFrame = tFinal - tInicial;
 		if(spentOnFrame.count() < millisecondsPerFrame ){
@@ -1003,16 +1063,15 @@ multiplayerSprite teste(370,100,62,116,"../assets/spriteplayer.png", 2,2,31,58,5
 			janela.changeName(gameRooms[vetorRoom]);
 			janela.setindexPlayer(vetorRoom);
 			janela.resetNPC();
-			janela.setUpNPC(listaDeJogadores);
+			janela.setUpNPC(controleMultiplayer.getListaDeJogadores());
 		}
-		janela.render(gameRooms[vetorRoom], listaDeJogadores);
+		janela.render(gameRooms[vetorRoom], controleMultiplayer.getListaDeJogadores());
 		//GAME LOOP!----------------------------------------
 		//MULTIPLAYER LOOP!---------------------------------
 
 		//mandar estado do jogador para o servidor
 		  meu_socket.send_to(boost::asio::buffer(gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,IDmultiplayer)), remote_endpoint);
-
-
+		  threadMultiplayer.join();
 		//MULTIPLAYER LOOP!---------------------------------
 	}
 
