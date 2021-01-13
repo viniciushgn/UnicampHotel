@@ -8,8 +8,8 @@
 #include <chrono>//tempo para igualar o periodo de cada game loop
 #include <thread>// std::this_thread::sleep_for
 //
-#include "json.hpp"
-using nlohmann::json;
+#include <boost/asio.hpp> //MULTIPLAYER
+using boost::asio::ip::udp;
 //
 
 /*---------------------------MODEL------------------------------------------------*/
@@ -577,7 +577,7 @@ class Controller {
 		const Uint8* getState();
 		void updatePlayer(Room & lugar);
 		bool updateRoom(Room & lugar, int & vetorAtual);
-		void updateSaveFile(json & tst,	std::vector<Room> & gameRooms);
+
 };
 
 bool Controller::getRodando(){
@@ -784,9 +784,7 @@ bool Controller::updateRoom(Room & lugar, int & vetorAtual){
   }
 }
 
-void Controller::updateSaveFile(json & tst,	std::vector<Room> & gameRooms){
-//tst["gameRooms"] = gameRooms;
-}
+
 
 /*---------------------------------------------------------------------*/
 
@@ -796,6 +794,36 @@ std::chrono::system_clock::time_point tFinal = std::chrono::system_clock::now();
 std::chrono::system_clock::time_point tInicial = std::chrono::system_clock::now();
 
 int main(int argc, char* args[]){
+
+
+//DIGITAR IP DO SERVIDOR--------------------------------------------------------
+	std::string IPHOST;
+	int IDmultiplayer;
+	std::cout << "--------------UNICAMP HOTEL------------------" << std::endl;
+	std::cout << "Digite o IP do host do hotel:";
+	std::cin >> IPHOST;
+	std::cout << "IP RECEBIDO." << std::endl;
+	std::cout << "Digite um ID:";
+	std::cin >> IDmultiplayer;
+	std::cout << "ID definido. Iniciando hotel..." << std:: endl;
+
+
+	boost::asio::io_service io_service;
+	udp::endpoint local_endpoint(udp::v4(), 0);
+  udp::socket meu_socket(io_service, local_endpoint);
+
+
+  // Encontrando IP remoto
+  boost::asio::ip::address ip_remoto = boost::asio::ip::address::from_string(IPHOST);
+  udp::endpoint remote_endpoint(ip_remoto, 9001);
+
+
+//------------------------------------------------------------------------------
+
+
+
+
+
 	//MODEL
 	const float fps = 60;
 	float millisecondsPerFrame =(1/fps)*1000;
@@ -948,8 +976,7 @@ multiplayerSprite teste(370,100,62,116,"../assets/spriteplayer.png", 2,2,31,58,5
 
 	//CONTROLLER
 
-//save
-json snapshot;
+
 
 	while(controle.getRodando()){
 		tFinal = std::chrono::system_clock::now();
@@ -982,7 +1009,8 @@ json snapshot;
 		//GAME LOOP!----------------------------------------
 		//MULTIPLAYER LOOP!---------------------------------
 
-
+		//mandar estado do jogador para o servidor
+		  meu_socket.send_to(boost::asio::buffer(gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,IDmultiplayer)), remote_endpoint);
 
 
 		//MULTIPLAYER LOOP!---------------------------------
