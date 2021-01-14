@@ -78,7 +78,7 @@ private:
 	udp::endpoint remote_endpoint;
 
 public:
-void updatePlayer();
+void updatePlayer(bool unlock);
 std::vector<multiplayerSprite> getListaDeJogadores();
 Multiplayer():local_endpoint(udp::v4(), 0), remote_endpoint(udp::v4(), 9001), meu_socket(io_service, local_endpoint){
 	std::cout << "--------------UNICAMP HOTEL------------------" << std::endl;
@@ -109,12 +109,12 @@ std::vector<multiplayerSprite> Multiplayer::getListaDeJogadores(){
 	return this->listaDeJogadores;
 }
 
-void Multiplayer::updatePlayer(){
+void Multiplayer::updatePlayer(bool unlock){
 
-std::cout << "PAPAPAPAPPAPAAPA";
+if(unlock){
 	char recv[5000];
 
-/*
+
 	this->meu_socket.receive_from(boost::asio::buffer(recv, 5000), this->remote_endpoint);
 
 	std::string recebida(recv);
@@ -145,8 +145,8 @@ std::cout << "PAPAPAPAPPAPAAPA";
 		this->listaDeJogadores.push_back(adicionar);
 	}
 
-*/
 
+}
 }
 
 void Multiplayer::sendMyData(std::string playerData){
@@ -1028,7 +1028,7 @@ int main(int argc, char* args[]){
 	//----------------------------------------------------------------------------
 
 
-
+	bool unlockReceive = 0;
 	int vetorRoom = 1;
 	std::vector<Room> gameRooms;
 
@@ -1048,7 +1048,8 @@ int main(int argc, char* args[]){
 	while(controle.getRodando()){
 
 //controleMultiplayer.updatePlayer();
-std::thread t1(&Multiplayer::updatePlayer, &controleMultiplayer);
+
+std::thread t1(&Multiplayer::updatePlayer, &controleMultiplayer, unlockReceive);
 std::thread t2(&Multiplayer::sendMyData, &controleMultiplayer,gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()));
 //		controleMultiplayer.updatePlayer();
 
@@ -1071,6 +1072,7 @@ std::thread t2(&Multiplayer::sendMyData, &controleMultiplayer,gameRooms[vetorRoo
 		controle.updateInput();
 		controle.updatePlayer(gameRooms[vetorRoom]);
 		if(controle.updateRoom(gameRooms[vetorRoom], vetorRoom)){
+			unlockReceive = 1;
 			janela.resetTexture();
 			janela.setUpTexture(gameRooms[vetorRoom]);
 			janela.changeName(gameRooms[vetorRoom]);
@@ -1085,6 +1087,7 @@ std::thread t2(&Multiplayer::sendMyData, &controleMultiplayer,gameRooms[vetorRoo
 		//mandar estado do jogador para o servidor
 
 	//	controleMultiplayer.sendMyData();
+
 t1.join();
 t2.join();
 		//MULTIPLAYER LOOP!---------------------------------
