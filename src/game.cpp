@@ -69,20 +69,53 @@ void multiplayerSprite::updateSprite(int nposX, int nposY, int nsizeX, int nsize
 class Multiplayer{
 private:
 	std::vector<multiplayerSprite> listaDeJogadores;
+	std::string IPHOST;
+	int IDmultiplayer;
+	boost::asio::io_service io_service;
+	udp::endpoint local_endpoint;
+	udp::socket meu_socket;
+	boost::asio::ip::address ip_remoto;
+	udp::endpoint remote_endpoint;
+
 public:
-void updatePlayer( udp::socket meu_socket, udp::endpoint remote_endpoint);
+void updatePlayer();
 std::vector<multiplayerSprite> getListaDeJogadores();
+Multiplayer():local_endpoint(udp::v4(), 0), remote_endpoint(udp::v4(), 0), meu_socket(io_service){
+	std::cout << "--------------UNICAMP HOTEL------------------" << std::endl;
+	std::cout << "Digite o IP do host do hotel:";
+	std::cin >> this->IPHOST;
+	std::cout << "IP RECEBIDO." << std::endl;
+	std::cout << "Digite um ID:";
+	std::cin >> this->IDmultiplayer;
+	std::cout << "ID definido. Iniciando hotel..." << std:: endl;
+
+
+	this->local_endpoint = udp::endpoint (udp::v4(), 0);
+	this->meu_socket = udp::socket (this->io_service, this->local_endpoint);
+
+
+	// Encontrando IP remoto
+	this->ip_remoto = boost::asio::ip::address::from_string(IPHOST);
+	this->remote_endpoint = udp::endpoint (this->ip_remoto, 9001);
+}
+void sendMyData(std::string playerData);
+int getIDMultiplayer();
 };
+
+int Multiplayer::getIDMultiplayer(){
+	return this->IDmultiplayer;
+}
+
+
 
 std::vector<multiplayerSprite> Multiplayer::getListaDeJogadores(){
 	return this->listaDeJogadores;
 }
 
-void Multiplayer::updatePlayer( udp::socket meu_socket, udp::endpoint remote_endpoint){
-
+void Multiplayer::updatePlayer(){
 
 	char recv[122];
-	meu_socket.receive_from(boost::asio::buffer(recv, 122), remote_endpoint);
+	this->meu_socket.receive_from(boost::asio::buffer(recv, 122), this->remote_endpoint);
 	std::string recebida(recv);
 
 	int idRecebida;
@@ -90,21 +123,16 @@ void Multiplayer::updatePlayer( udp::socket meu_socket, udp::endpoint remote_end
 	std::vector<std::string> parsed;
 	std::stringstream ss(recebida);
 
-
-
-
 	while (ss.good()) {
 	  std::string substr;
 	  std::getline(ss, substr, ',');
 	  parsed.push_back(substr);
 	  }
+	idRecebida = std::stoi(parsed[8]);
 
-
-		idRecebida = std::stoi(parsed[8]);
-
-	for(int n = 0; n < listaDeJogadores.size() && !atualizei; n++){
-		if(listaDeJogadores[n].ID == idRecebida){
-			listaDeJogadores[n].updateSprite(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]), std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
+	for(int n = 0; n < this->listaDeJogadores.size() && !atualizei; n++){
+		if(this->listaDeJogadores[n].ID == idRecebida){
+			this->listaDeJogadores[n].updateSprite(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]), std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
 			atualizei = 1;
 			}
 	}
@@ -113,17 +141,19 @@ void Multiplayer::updatePlayer( udp::socket meu_socket, udp::endpoint remote_end
 
 	if(!atualizei){
 		multiplayerSprite adicionar(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]),"../assets/spriteplayer.png", std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
-		listaDeJogadores.push_back(adicionar);
+		this->listaDeJogadores.push_back(adicionar);
 	}
 
 
 
 }
 
+void Multiplayer::sendMyData(std::string playerData){
+	meu_socket.send_to(boost::asio::buffer(playerData), this->remote_endpoint);
+}
 
 
-
-
+//gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,IDmultiplayer)
 
 
 
@@ -858,26 +888,6 @@ int main(int argc, char* args[]){
 
 
 //DIGITAR IP DO SERVIDOR--------------------------------------------------------
-	std::string IPHOST;
-	int IDmultiplayer;
-	std::cout << "--------------UNICAMP HOTEL------------------" << std::endl;
-	std::cout << "Digite o IP do host do hotel:";
-	std::cin >> IPHOST;
-	std::cout << "IP RECEBIDO." << std::endl;
-	std::cout << "Digite um ID:";
-	std::cin >> IDmultiplayer;
-	std::cout << "ID definido. Iniciando hotel..." << std:: endl;
-
-
-	boost::asio::io_service io_service;
-	udp::endpoint local_endpoint(udp::v4(), 0);
-  udp::socket meu_socket(io_service, local_endpoint);
-
-
-  // Encontrando IP remoto
-  boost::asio::ip::address ip_remoto = boost::asio::ip::address::from_string(IPHOST);
-  udp::endpoint remote_endpoint(ip_remoto, 9001);
-
 
 //------------------------------------------------------------------------------
 
@@ -1036,8 +1046,9 @@ int main(int argc, char* args[]){
 
 	while(controle.getRodando()){
 
-
-		std::thread threadMultiplayer(&Multiplayer::updatePlayer,&controleMultiplayer,meu_socket,remote_endpoint);
+//std::thread t1(&Multiplayer::updatePlayer, &controleMultiplayer);
+std::thread t2(&Multiplayer::sendMyData, &controleMultiplayer,gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()));
+//		controleMultiplayer.updatePlayer();
 
 		tFinal = std::chrono::system_clock::now();
 		std::chrono::duration<double, std::milli> spentOnFrame = tFinal - tInicial;
@@ -1070,8 +1081,10 @@ int main(int argc, char* args[]){
 		//MULTIPLAYER LOOP!---------------------------------
 
 		//mandar estado do jogador para o servidor
-		  meu_socket.send_to(boost::asio::buffer(gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,IDmultiplayer)), remote_endpoint);
-		  threadMultiplayer.join();
+
+	//	controleMultiplayer.sendMyData();
+//t1.join();
+t2.join();
 		//MULTIPLAYER LOOP!---------------------------------
 	}
 
