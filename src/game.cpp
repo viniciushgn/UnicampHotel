@@ -114,9 +114,9 @@ void Multiplayer::updatePlayer(){
 std::cout << "PAPAPAPAPPAPAAPA";
 	char recv[5000];
 
-
-	this->meu_socket.receive_from(boost::asio::buffer(recv, 5000), this->remote_endpoint);
 /*
+	this->meu_socket.receive_from(boost::asio::buffer(recv, 5000), this->remote_endpoint);
+
 	std::string recebida(recv);
 
 	int idRecebida;
