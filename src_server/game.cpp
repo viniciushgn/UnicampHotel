@@ -148,10 +148,12 @@ if(unlock){
 
 paraMandar.push_back(recebida);
 }
+
 }
 
 void Multiplayer::sendMyData(std::string playerData, bool unlock){
 	if(unlock){
+		std::cout << paraMandar.size();
 while(paraMandar.size() > 0){
 	for(int n; n < paraQuemMandar.size(); n++){
 	meu_socket.send_to(boost::asio::buffer(playerData), this->paraQuemMandar[n]);
