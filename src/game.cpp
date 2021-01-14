@@ -80,7 +80,7 @@ private:
 public:
 void updatePlayer();
 std::vector<multiplayerSprite> getListaDeJogadores();
-Multiplayer():local_endpoint(udp::v4(), 0), remote_endpoint(udp::v4(), 0), meu_socket(io_service){
+Multiplayer():local_endpoint(udp::v4(), 0), remote_endpoint(udp::v4(), 9001), meu_socket(io_service, local_endpoint){
 	std::cout << "--------------UNICAMP HOTEL------------------" << std::endl;
 	std::cout << "Digite o IP do host do hotel:";
 	std::cin >> this->IPHOST;
@@ -89,9 +89,6 @@ Multiplayer():local_endpoint(udp::v4(), 0), remote_endpoint(udp::v4(), 0), meu_s
 	std::cin >> this->IDmultiplayer;
 	std::cout << "ID definido. Iniciando hotel..." << std:: endl;
 
-
-	this->local_endpoint = udp::endpoint (udp::v4(), 0);
-	this->meu_socket = udp::socket (this->io_service, this->local_endpoint);
 
 
 	// Encontrando IP remoto
@@ -114,8 +111,12 @@ std::vector<multiplayerSprite> Multiplayer::getListaDeJogadores(){
 
 void Multiplayer::updatePlayer(){
 
-	char recv[122];
-	this->meu_socket.receive_from(boost::asio::buffer(recv, 122), this->remote_endpoint);
+std::cout << "PAPAPAPAPPAPAAPA";
+	char recv[5000];
+
+
+	this->meu_socket.receive_from(boost::asio::buffer(recv, 5000), this->remote_endpoint);
+/*
 	std::string recebida(recv);
 
 	int idRecebida;
@@ -144,7 +145,7 @@ void Multiplayer::updatePlayer(){
 		this->listaDeJogadores.push_back(adicionar);
 	}
 
-
+*/
 
 }
 
@@ -1046,7 +1047,8 @@ int main(int argc, char* args[]){
 
 	while(controle.getRodando()){
 
-//std::thread t1(&Multiplayer::updatePlayer, &controleMultiplayer);
+//controleMultiplayer.updatePlayer();
+std::thread t1(&Multiplayer::updatePlayer, &controleMultiplayer);
 std::thread t2(&Multiplayer::sendMyData, &controleMultiplayer,gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()));
 //		controleMultiplayer.updatePlayer();
 
@@ -1083,7 +1085,7 @@ std::thread t2(&Multiplayer::sendMyData, &controleMultiplayer,gameRooms[vetorRoo
 		//mandar estado do jogador para o servidor
 
 	//	controleMultiplayer.sendMyData();
-//t1.join();
+t1.join();
 t2.join();
 		//MULTIPLAYER LOOP!---------------------------------
 	}
