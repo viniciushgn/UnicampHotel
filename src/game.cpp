@@ -112,13 +112,12 @@ std::vector<multiplayerSprite> Multiplayer::getListaDeJogadores(){
 void Multiplayer::updatePlayer(bool unlock){
 
 if(unlock){
+	//RECEBNDO STRING
 	char recv[5000];
-
-
 	this->meu_socket.receive_from(boost::asio::buffer(recv, 5000), this->remote_endpoint);
-
 	std::string recebida(recv);
 
+	//INTERPRETANDO E COLOCANDO NO VETOR DE JOGADORES
 	int idRecebida;
 	bool atualizei = 0;
 	std::vector<std::string> parsed;
@@ -130,24 +129,20 @@ if(unlock){
 	  parsed.push_back(substr);
 	  }
 	idRecebida = std::stoi(parsed[8]);
-
 	for(int n = 0; n < this->listaDeJogadores.size() && !atualizei; n++){
 		if(this->listaDeJogadores[n].ID == idRecebida){
 			this->listaDeJogadores[n].updateSprite(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]), std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
 			atualizei = 1;
 			}
 	}
-
-
-
 	if(!atualizei){
 		multiplayerSprite adicionar(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]),"../assets/spriteplayer.png", std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
 		this->listaDeJogadores.push_back(adicionar);
 	}
-
-
 }
 }
+
+
 
 void Multiplayer::sendMyData(std::string playerData){
 	meu_socket.send_to(boost::asio::buffer(playerData), this->remote_endpoint);
