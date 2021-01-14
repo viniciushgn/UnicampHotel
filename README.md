@@ -2,7 +2,7 @@
 ## Projeto EA872K
 
 
-![alt text](https://i.ibb.co/nMzfZY2/sprite-Hall2.png)
+![alt text](https://i.ibb.co/dMtxSwq/Whats-App-Image-2020-12-16-at-12-49-14-PM.jpg)
 
 
 
