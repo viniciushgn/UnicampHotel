@@ -69,84 +69,142 @@ void multiplayerSprite::updateSprite(int nposX, int nposY, int nsizeX, int nsize
 class Multiplayer{
 private:
 	std::vector<multiplayerSprite> listaDeJogadores;
-	std::string IPHOST;
+	std::string dadosAtualizados;
 	int IDmultiplayer;
-	boost::asio::io_service io_service;
-	udp::endpoint local_endpoint;
-	udp::socket meu_socket;
-	boost::asio::ip::address ip_remoto;
-	udp::endpoint remote_endpoint;
 
 public:
-void updatePlayer(bool unlock);
+void updatePlayer();
 std::vector<multiplayerSprite> getListaDeJogadores();
-Multiplayer():local_endpoint(udp::v4(), 0), remote_endpoint(udp::v4(), 9001), meu_socket(io_service, local_endpoint){
-	std::cout << "--------------UNICAMP HOTEL------------------" << std::endl;
-	std::cout << "Digite o IP do host do hotel:";
-	std::cin >> this->IPHOST;
-	std::cout << "IP RECEBIDO." << std::endl;
-	std::cout << "Digite um ID:";
-	std::cin >> this->IDmultiplayer;
-	std::cout << "ID definido. Iniciando hotel..." << std:: endl;
-
-
-
-	// Encontrando IP remoto
-	this->ip_remoto = boost::asio::ip::address::from_string(IPHOST);
-	this->remote_endpoint = udp::endpoint (this->ip_remoto, 9001);
-}
-void sendMyData(std::string playerData);
 int getIDMultiplayer();
+Multiplayer();
+void setDadosAtualizados(std::string dado);
+void addSprite(multiplayerSprite add);
 };
+
+void Multiplayer::setDadosAtualizados(std::string dado){
+
+this->dadosAtualizados = dado;
+
+}
+
+void Multiplayer::addSprite(multiplayerSprite add){
+	this->listaDeJogadores.push_back(add);
+}
 
 int Multiplayer::getIDMultiplayer(){
 	return this->IDmultiplayer;
 }
 
-
+Multiplayer::Multiplayer(){
+	std::cout << "¸¸♬·¯·♪·¯·♫¸¸ Identidade Online¸¸♫·¯·♪¸♩·¯·♬¸¸" << std::endl;
+	std::cout << "Digite seu ID [inteiro positivo]:" << std::endl;
+	std::cin >> this->IDmultiplayer;
+}
 
 std::vector<multiplayerSprite> Multiplayer::getListaDeJogadores(){
 	return this->listaDeJogadores;
 }
 
-void Multiplayer::updatePlayer(bool unlock){
+void Multiplayer::updatePlayer(){
 
-if(unlock){
-	//RECEBNDO STRING
-	char recv[5000];
-	this->meu_socket.receive_from(boost::asio::buffer(recv, 5000), this->remote_endpoint);
-	std::string recebida(recv);
-
-	//INTERPRETANDO E COLOCANDO NO VETOR DE JOGADORES
-	int idRecebida;
-	bool atualizei = 0;
+	this->listaDeJogadores.clear();
 	std::vector<std::string> parsed;
-	std::stringstream ss(recebida);
+	std::stringstream ss(this->dadosAtualizados);
 
 	while (ss.good()) {
 	  std::string substr;
 	  std::getline(ss, substr, ',');
 	  parsed.push_back(substr);
 	  }
-	idRecebida = std::stoi(parsed[8]);
-	for(int n = 0; n < this->listaDeJogadores.size() && !atualizei; n++){
-		if(this->listaDeJogadores[n].ID == idRecebida){
-			this->listaDeJogadores[n].updateSprite(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]), std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
-			atualizei = 1;
-			}
-	}
-	if(!atualizei){
-		multiplayerSprite adicionar(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]),"../assets/spriteplayer.png", std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
+
+
+	multiplayerSprite adicionar(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]),"../assets/spriteplayer.png", std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
 		this->listaDeJogadores.push_back(adicionar);
-	}
+
 }
+
+
+//UDP---------------------------------------------------------------------------
+
+class UDPSystemClient{
+public:
+std::string HostDados;
+
+boost::asio::io_service io_service;
+udp::endpoint local_endpoint;
+udp::endpoint remote_endpoint;
+udp::socket my_socket;
+
+
+UDPSystemClient();
+
+void receiveAndStoreData();
+
+void sendOneDataToHost(std::string dadoEnviar);
+
+
+};
+
+UDPSystemClient::UDPSystemClient():local_endpoint(udp::v4(), 0), remote_endpoint(udp::v4(), 9001), my_socket(io_service){
+
+my_socket = udp::socket (io_service, // io service
+  local_endpoint); // endpoint
+	boost::asio::ip::address ip_remoto;
+  std::string IPHOST;
+  std::cout << "¸¸♬·¯·♪·¯·♫¸¸ Check In¸¸♫·¯·♪¸♩·¯·♬¸¸" << std::endl;
+	std::cout << "Digite o IP do host do hotel:";
+	std::cin >> IPHOST;
+
+
+	// Encontrando IP remoto
+	ip_remoto = boost::asio::ip::address::from_string(IPHOST);
+	this->remote_endpoint = udp::endpoint (ip_remoto, 9001);
+
+  std::cout << "IP aceito." << std::endl;
+
+	std::cout << "Iniciando hotel..." << std:: endl;
+}
+
+void UDPSystemClient::receiveAndStoreData(){
+
+  char v[6000];
+  std::string dado;
+  bool repetido = 0;
+
+
+my_socket.receive_from(boost::asio::buffer(v,6000), // Local do buffer
+                        remote_endpoint); // Confs. do Cliente
+
+
+dado.assign(v, std::strlen(v) + 1);
+
+
+
+this->HostDados = dado;
+
+
+
+
+
 }
 
 
 
-void Multiplayer::sendMyData(std::string playerData){
-	meu_socket.send_to(boost::asio::buffer(playerData), this->remote_endpoint);
+void UDPSystemClient::sendOneDataToHost(std::string dadoEnviar){
+
+
+
+
+      my_socket.send_to(boost::asio::buffer(dadoEnviar), remote_endpoint);
+
+
+
+
+
 }
+
+//UDP---------------------------------------------------------------------------
+
 
 
 //gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,IDmultiplayer)
@@ -618,6 +676,8 @@ void View::render(Room & lugar, std::vector<multiplayerSprite> nlistaDeJogadores
 //NPC-------------------------------------------------------------
 for(int iterator = 0; iterator < nlistaDeJogadores.size(); iterator++){
 
+
+
 	if(nlistaDeJogadores[iterator].indexLocal == this->indexPlayer){
 	targetNPC.x = nlistaDeJogadores[iterator].posX;
 	targetNPC.y = nlistaDeJogadores[iterator].posY;
@@ -1024,6 +1084,8 @@ int main(int argc, char* args[]){
 
 
 	bool unlockReceive = 0;
+	bool canSend = 0;
+	bool unlockSend = 0;
 	int vetorRoom = 1;
 	std::vector<Room> gameRooms;
 
@@ -1038,14 +1100,29 @@ int main(int argc, char* args[]){
 	//CONTROLLER
 	Controller controle;
 	Multiplayer controleMultiplayer;
+	UDPSystemClient UDPmultiplayer;
+
+//std::cout << gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()) << std::endl;
+
+
+
+
+//multiplayerSprite adicionar(370, 100, 62,116,"../assets/spriteplayer.png", 2,2,31,58,1,999);
+//controleMultiplayer.addSprite(adicionar);
+
+
+
+
 
 
 	while(controle.getRodando()){
+std::thread enviando(&UDPSystemClient::sendOneDataToHost, &UDPmultiplayer, gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()) );
 
 //controleMultiplayer.updatePlayer();
 
-std::thread t1(&Multiplayer::updatePlayer, &controleMultiplayer, unlockReceive);
-std::thread t2(&Multiplayer::sendMyData, &controleMultiplayer,gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()));
+
+//IMPORTANTE gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer())
+
 //		controleMultiplayer.updatePlayer();
 
 		tFinal = std::chrono::system_clock::now();
@@ -1066,7 +1143,8 @@ std::thread t2(&Multiplayer::sendMyData, &controleMultiplayer,gameRooms[vetorRoo
 		//GAME LOOP-----------------------------------------
 		controle.updateInput();
 		controle.updatePlayer(gameRooms[vetorRoom]);
-		if(controle.updateRoom(gameRooms[vetorRoom], vetorRoom)){
+		enviando.join();
+		std::thread recebendo(&UDPSystemClient::receiveAndStoreData, &UDPmultiplayer);		if(controle.updateRoom(gameRooms[vetorRoom], vetorRoom)){
 			unlockReceive = 1;
 			janela.resetTexture();
 			janela.setUpTexture(gameRooms[vetorRoom]);
@@ -1075,7 +1153,11 @@ std::thread t2(&Multiplayer::sendMyData, &controleMultiplayer,gameRooms[vetorRoo
 			janela.resetNPC();
 			janela.setUpNPC(controleMultiplayer.getListaDeJogadores());
 		}
+		recebendo.join();
+		controleMultiplayer.setDadosAtualizados(UDPmultiplayer.HostDados);
+		controleMultiplayer.updatePlayer();
 		janela.render(gameRooms[vetorRoom], controleMultiplayer.getListaDeJogadores());
+
 		//GAME LOOP!----------------------------------------
 		//MULTIPLAYER LOOP!---------------------------------
 
@@ -1083,8 +1165,7 @@ std::thread t2(&Multiplayer::sendMyData, &controleMultiplayer,gameRooms[vetorRoo
 
 	//	controleMultiplayer.sendMyData();
 
-t1.join();
-t2.join();
+
 		//MULTIPLAYER LOOP!---------------------------------
 	}
 
