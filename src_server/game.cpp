@@ -71,20 +71,20 @@ private:
 	std::vector<multiplayerSprite> listaDeJogadores;
 	std::string dadosAtualizados;
 	int IDmultiplayer;
-
+	int numeroConectados;
 public:
 void updatePlayer();
 std::vector<multiplayerSprite> getListaDeJogadores();
 int getIDMultiplayer();
 Multiplayer();
-void setDadosAtualizados(std::string dado);
+void setDadosAtualizados(std::string dado, int conectados);
 void addSprite(multiplayerSprite add);
 };
 
-void Multiplayer::setDadosAtualizados(std::string dado){
+void Multiplayer::setDadosAtualizados(std::string dado, int conectados){
 
 this->dadosAtualizados = dado;
-
+this->numeroConectados = conectados;
 }
 
 void Multiplayer::addSprite(multiplayerSprite add){
@@ -107,6 +107,7 @@ std::vector<multiplayerSprite> Multiplayer::getListaDeJogadores(){
 
 void Multiplayer::updatePlayer(){
 
+
 	this->listaDeJogadores.clear();
 	std::vector<std::string> parsed;
 	std::stringstream ss(this->dadosAtualizados);
@@ -116,11 +117,13 @@ void Multiplayer::updatePlayer(){
 	  std::getline(ss, substr, ',');
 	  parsed.push_back(substr);
 	  }
+std::cout << numeroConectados << ":" << parsed.size() << std::endl;
+std::cout << "dado:" << this->dadosAtualizados << std::endl;
 
 
-	multiplayerSprite adicionar(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]),"../assets/spriteplayer.png", std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
+	multiplayerSprite adicionar(std::stoi(parsed[10]), std::stoi(parsed[11]), std::stoi(parsed[12]), std::stoi(parsed[13]),"../assets/spriteplayer.png", std::stoi(parsed[14]), std::stoi(parsed[15]), std::stoi(parsed[16]), std::stoi(parsed[17]), std::stoi(parsed[18]), std::stoi(parsed[19]));
 		this->listaDeJogadores.push_back(adicionar);
-
+std::cout << "IndexLocalColocando:" << listaDeJogadores[0].indexLocal << std::endl;
 }
 
 
@@ -374,7 +377,7 @@ std::string pack = std::to_string(this->posX) + "," + std::to_string(this->posY)
 + std::to_string(this->spritePointsX[this->estadoSprite]) + "," + std::to_string(this->spritePointsY[this->estadoSprite]) + ","
 
 + std::to_string(this->spriteSizeX) + "," + std::to_string(this->spriteSizeY) + ","
-+ std::to_string(local) + "," + std::to_string(id);
++ std::to_string(local) + "," + std::to_string(id) + ",";
 
 return pack;
 
@@ -604,7 +607,7 @@ int View::initView(int posX, int posY, int sizeX, int sizeY){
   }
 
   //Criando Janela
-  window = SDL_CreateWindow("Unicamp Hotel", posX,posY,sizeX,sizeY,0);
+  window = SDL_CreateWindow("Unicamp Hotel - HOST", posX,posY,sizeX,sizeY,0);
 
   if(window == nullptr){
     std::cout << "Erro: " << SDL_GetError();
@@ -704,7 +707,8 @@ for(int iterator = 0; iterator < nlistaDeJogadores.size(); iterator++){
 
 
 
-	if(nlistaDeJogadores[iterator].indexLocal == this->indexPlayer){
+	if(nlistaDeJogadores[iterator].indexLocal == this->indexPlayer ){
+		std::cout << "LINHA711: n" << nlistaDeJogadores.size() << "index"<< nlistaDeJogadores[iterator].indexLocal << "indexplayer" << this->indexPlayer <<  std::endl;
 	targetNPC.x = nlistaDeJogadores[iterator].posX;
 	targetNPC.y = nlistaDeJogadores[iterator].posY;
 	targetNPC.w = nlistaDeJogadores[iterator].sizeX;
@@ -1123,23 +1127,25 @@ int main(int argc, char* args[]){
 	View janela;
 	janela.initView(100,100,780,600);
 	janela.setUpTexture(gameRooms[vetorRoom]);
+
 	//CONTROLLER
 	Controller controle;
 	Multiplayer controleMultiplayer;
 	UDPSystem UDPmultiplayer;
 	UDPmultiplayer.atualizarMeuDado(gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()));
+	janela.setindexPlayer(vetorRoom);
 
 //std::cout << gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()) << std::endl;
+//SETANDO-----------------------------------------------------------------------
 
 
-
+//------------------------------------------------------------------------------
 
 //multiplayerSprite adicionar(370, 100, 62,116,"../assets/spriteplayer.png", 2,2,31,58,1,999);
 //controleMultiplayer.addSprite(adicionar);
 
 
-
-
+bool primeira = 1;
 
 
 	while(controle.getRodando()){
@@ -1172,17 +1178,32 @@ std::thread recebendo(&UDPSystem::receiveAndStoreDataAndClients, &UDPmultiplayer
 		recebendo.join();
 		UDPmultiplayer.atualizarMeuDado(gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()));
 		std::thread enviando(&UDPSystem::sendOneDataToAllClients, &UDPmultiplayer, UDPmultiplayer.dadosAtualizados );
+		controleMultiplayer.setDadosAtualizados(UDPmultiplayer.dadosAtualizados, UDPmultiplayer.clientesConectados);
+		controleMultiplayer.updatePlayer();
 		if(controle.updateRoom(gameRooms[vetorRoom], vetorRoom)){
+			std::cout << "UEPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+			janela.setindexPlayer(vetorRoom);
 			unlockReceive = 1;
 			janela.resetTexture();
 			janela.setUpTexture(gameRooms[vetorRoom]);
 			janela.changeName(gameRooms[vetorRoom]);
-			janela.setindexPlayer(vetorRoom);
+			controleMultiplayer.setDadosAtualizados(UDPmultiplayer.dadosAtualizados, UDPmultiplayer.clientesConectados);
+			controleMultiplayer.updatePlayer();
 			janela.resetNPC();
 			janela.setUpNPC(controleMultiplayer.getListaDeJogadores());
 		}
-		controleMultiplayer.setDadosAtualizados(UDPmultiplayer.dadosAtualizados);
-		controleMultiplayer.updatePlayer();
+if(primeira){
+	janela.setindexPlayer(vetorRoom);
+	unlockReceive = 1;
+	janela.resetTexture();
+	janela.setUpTexture(gameRooms[vetorRoom]);
+	janela.changeName(gameRooms[vetorRoom]);
+	controleMultiplayer.setDadosAtualizados(UDPmultiplayer.dadosAtualizados, UDPmultiplayer.clientesConectados);
+	controleMultiplayer.updatePlayer();
+	janela.resetNPC();
+	janela.setUpNPC(controleMultiplayer.getListaDeJogadores());
+	primeira = 0;
+}
 		janela.render(gameRooms[vetorRoom], controleMultiplayer.getListaDeJogadores());
 		enviando.join();
 		//GAME LOOP!----------------------------------------

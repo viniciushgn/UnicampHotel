@@ -348,7 +348,7 @@ std::string pack = std::to_string(this->posX) + "," + std::to_string(this->posY)
 + std::to_string(this->spritePointsX[this->estadoSprite]) + "," + std::to_string(this->spritePointsY[this->estadoSprite]) + ","
 
 + std::to_string(this->spriteSizeX) + "," + std::to_string(this->spriteSizeY) + ","
-+ std::to_string(local) + "," + std::to_string(id);
++ std::to_string(local) + "," + std::to_string(id) + ",";
 
 return pack;
 
@@ -1101,7 +1101,7 @@ int main(int argc, char* args[]){
 	Controller controle;
 	Multiplayer controleMultiplayer;
 	UDPSystemClient UDPmultiplayer;
-
+	janela.setindexPlayer(vetorRoom);
 //std::cout << gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()) << std::endl;
 
 
@@ -1113,11 +1113,11 @@ int main(int argc, char* args[]){
 
 
 
-
+bool primeira = 1;
 
 	while(controle.getRodando()){
 std::thread enviando(&UDPSystemClient::sendOneDataToHost, &UDPmultiplayer, gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()) );
-
+std::cout << "enviando:" << gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()) << std::endl;
 //controleMultiplayer.updatePlayer();
 
 
@@ -1156,6 +1156,19 @@ std::thread enviando(&UDPSystemClient::sendOneDataToHost, &UDPmultiplayer, gameR
 		recebendo.join();
 		controleMultiplayer.setDadosAtualizados(UDPmultiplayer.HostDados);
 		controleMultiplayer.updatePlayer();
+
+if(primeira){
+	primeira = 0;
+	janela.resetTexture();
+	janela.setUpTexture(gameRooms[vetorRoom]);
+	janela.changeName(gameRooms[vetorRoom]);
+	janela.setindexPlayer(vetorRoom);
+	janela.resetNPC();
+	janela.setUpNPC(controleMultiplayer.getListaDeJogadores());
+}
+
+
+
 		janela.render(gameRooms[vetorRoom], controleMultiplayer.getListaDeJogadores());
 
 		//GAME LOOP!----------------------------------------
