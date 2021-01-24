@@ -106,7 +106,7 @@ std::vector<multiplayerSprite> Multiplayer::getListaDeJogadores(){
 }
 
 void Multiplayer::updatePlayer(){
-
+int tamanho = 0;
 	this->listaDeJogadores.clear();
 	std::vector<std::string> parsed;
 	std::stringstream ss(this->dadosAtualizados);
@@ -117,9 +117,16 @@ void Multiplayer::updatePlayer(){
 	  parsed.push_back(substr);
 	  }
 
-
+/*
 	multiplayerSprite adicionar(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]),"../assets/spriteplayer.png", std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
-		this->listaDeJogadores.push_back(adicionar);
+		this->listaDeJogadores.push_back(adicionar);*/
+tamanho = (parsed.size()/10) -1;
+		for(int k = 0; k <= tamanho; k++){
+			if(std::stoi(parsed[9+ 10*k]) != this->IDmultiplayer){
+			multiplayerSprite adicionar(std::stoi(parsed[0 + 10*k]), std::stoi(parsed[1+ 10*k]), std::stoi(parsed[2+ 10*k]), std::stoi(parsed[3+ 10*k]),"../assets/spriteplayer.png", std::stoi(parsed[4+ 10*k]), std::stoi(parsed[5+ 10*k]), std::stoi(parsed[6+ 10*k]), std::stoi(parsed[7+ 10*k]), std::stoi(parsed[8+ 10*k]), std::stoi(parsed[9+ 10*k]));
+				this->listaDeJogadores.push_back(adicionar);
+			}
+			}
 
 }
 

@@ -120,10 +120,13 @@ void Multiplayer::updatePlayer(){
 std::cout << numeroConectados << ":" << parsed.size() << std::endl;
 std::cout << "dado:" << this->dadosAtualizados << std::endl;
 
-
-	multiplayerSprite adicionar(std::stoi(parsed[10]), std::stoi(parsed[11]), std::stoi(parsed[12]), std::stoi(parsed[13]),"../assets/spriteplayer.png", std::stoi(parsed[14]), std::stoi(parsed[15]), std::stoi(parsed[16]), std::stoi(parsed[17]), std::stoi(parsed[18]), std::stoi(parsed[19]));
+for(int k = 0; k <= this->numeroConectados; k++){
+	if(k != 0){
+	multiplayerSprite adicionar(std::stoi(parsed[0 + 10*k]), std::stoi(parsed[1+ 10*k]), std::stoi(parsed[2+ 10*k]), std::stoi(parsed[3+ 10*k]),"../assets/spriteplayer.png", std::stoi(parsed[4+ 10*k]), std::stoi(parsed[5+ 10*k]), std::stoi(parsed[6+ 10*k]), std::stoi(parsed[7+ 10*k]), std::stoi(parsed[8+ 10*k]), std::stoi(parsed[9+ 10*k]));
 		this->listaDeJogadores.push_back(adicionar);
-std::cout << "IndexLocalColocando:" << listaDeJogadores[0].indexLocal << std::endl;
+	}
+	}
+
 }
 
 
