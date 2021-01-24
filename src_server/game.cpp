@@ -166,12 +166,13 @@ clientesConectados = 0;
 
 void UDPSystem::receiveAndStoreDataAndClients(){
 
-  char v[6000];
+  char v[5000];
+	for (int i =0; i<5000; i++){v[i]='\0';}
   std::string dado;
   bool repetido = 0;
 
 
-    my_socket.receive_from(boost::asio::buffer(v,6000), // Local do buffer
+    my_socket.receive_from(boost::asio::buffer(v,5000), // Local do buffer
                         remote_endpoint); // Confs. do Cliente
 
 
