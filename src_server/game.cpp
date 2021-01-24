@@ -1214,6 +1214,7 @@ std::thread recebendo(&UDPSystem::receiveAndStoreDataAndClients, &UDPmultiplayer
 		recebendo.join();
 		UDPmultiplayer.atualizarMeuDado(gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()));
 		std::thread enviando(&UDPSystem::sendOneDataToAllClients, &UDPmultiplayer, UDPmultiplayer.dadosAtualizados );
+		std::cout << "mandando:" << UDPmultiplayer.dadosAtualizados << std::endl;
 		controleMultiplayer.setDadosAtualizados(UDPmultiplayer.dadosAtualizados, UDPmultiplayer.clientesConectados);
 		controleMultiplayer.updatePlayer();
 		if(controle.updateRoom(gameRooms[vetorRoom], vetorRoom)){

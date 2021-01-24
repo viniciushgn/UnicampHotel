@@ -117,6 +117,8 @@ int tamanho = 0;
 	  parsed.push_back(substr);
 	  }
 
+
+
 /*
 	multiplayerSprite adicionar(std::stoi(parsed[0]), std::stoi(parsed[1]), std::stoi(parsed[2]), std::stoi(parsed[3]),"../assets/spriteplayer.png", std::stoi(parsed[4]), std::stoi(parsed[5]), std::stoi(parsed[6]), std::stoi(parsed[7]), std::stoi(parsed[8]), std::stoi(parsed[9]));
 		this->listaDeJogadores.push_back(adicionar);*/
@@ -190,7 +192,7 @@ dado.assign(v, std::strlen(v) + 1);
 this->HostDados = dado;
 
 
-
+std::cout << "RECEBIDO:" << dado << std::endl;
 
 
 }
