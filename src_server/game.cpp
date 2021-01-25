@@ -8,8 +8,8 @@
 #include <chrono>//tempo para igualar o periodo de cada game loop
 #include <thread>// std::this_thread::sleep_for
 #include <memory>//lidar com threads
-#include <typeinfo> //TESTE RETIRAR
-#include <regex>//RETIRAAR
+
+
 //
 #include <boost/asio.hpp> //MULTIPLAYER
 using boost::asio::ip::udp;
@@ -118,15 +118,14 @@ int tamanho = 0;
 	  std::getline(ss, substr, ',');
 	  parsed.push_back(substr);
 	  }
-std::cout << numeroConectados << ":" << parsed.size() << std::endl;
-std::cout << "dado:" << this->dadosAtualizados << std::endl;
+
 //TESTANDO
 
 //FIMTESTE
 
 tamanho = (parsed.size()/10) -1;
 for(int k = 0; k <= tamanho; k++){
-			parsed[0 + 10*k] = std::regex_replace(parsed[0 + 10*k], std::regex(R"([\D])"), "");
+
 
 
 
@@ -138,26 +137,9 @@ for(int k = 0; k <= tamanho; k++){
 		this->listaDeJogadores.push_back(adicionar);
 	}
 	}
-/*
-std::cout << "tamanho:" << tamanho << std::endl;
-for(int k = 0; k <= tamanho; k++){
-	if(k != 0){
-
-		//teste
-		std::cout << "k:" << k << std::endl;
-		if(k == 2){
-			std::cout << "TESTE";
-			std::cout << "ABACAXI" << parsed[20];
-
-		}
 
 
-	multiplayerSprite adicionar(std::stoi(parsed[0 + 10*k]), std::stoi(parsed[1+ 10*k]), std::stoi(parsed[2+ 10*k]), std::stoi(parsed[3+ 10*k]),"../assets/spriteplayer.png", std::stoi(parsed[4+ 10*k]), std::stoi(parsed[5+ 10*k]), std::stoi(parsed[6+ 10*k]), std::stoi(parsed[7+ 10*k]), std::stoi(parsed[8+ 10*k]), std::stoi(parsed[9+ 10*k]));
-		this->listaDeJogadores.push_back(adicionar);
-	}
-}*/
 
-	std::cout << "ALALALALALLAALLALA" << std::endl;
 
 }
 
@@ -267,7 +249,7 @@ void UDPSystem::sendOneDataToAllClients(std::string dadoEnviar){
 
     for(int m = 0; m < clientes.size(); m++){
       my_socket.send_to(boost::asio::buffer(dadoEnviar), clientes[m]);
-			std::cout << "mandando para " << m << ":" << dadoEnviar << std::endl;
+
     }
 
 
@@ -750,7 +732,6 @@ for(int iterator = 0; iterator < nlistaDeJogadores.size(); iterator++){
 
 
 	if(nlistaDeJogadores[iterator].indexLocal == this->indexPlayer ){
-		std::cout << "LINHA711: n" << nlistaDeJogadores.size() << "index"<< nlistaDeJogadores[iterator].indexLocal << "indexplayer" << this->indexPlayer <<  std::endl;
 	targetNPC.x = nlistaDeJogadores[iterator].posX;
 	targetNPC.y = nlistaDeJogadores[iterator].posY;
 	targetNPC.w = nlistaDeJogadores[iterator].sizeX;
@@ -1220,11 +1201,9 @@ std::thread recebendo(&UDPSystem::receiveAndStoreDataAndClients, &UDPmultiplayer
 		recebendo.join();
 		UDPmultiplayer.atualizarMeuDado(gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()));
 		std::thread enviando(&UDPSystem::sendOneDataToAllClients, &UDPmultiplayer, UDPmultiplayer.dadosAtualizados );
-		std::cout << "mandando:" << UDPmultiplayer.dadosAtualizados << std::endl;
 		controleMultiplayer.setDadosAtualizados(UDPmultiplayer.dadosAtualizados, UDPmultiplayer.clientesConectados);
 		controleMultiplayer.updatePlayer();
 		if(controle.updateRoom(gameRooms[vetorRoom], vetorRoom)){
-			std::cout << "UEPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
 			janela.setindexPlayer(vetorRoom);
 			unlockReceive = 1;
 			janela.resetTexture();

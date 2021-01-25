@@ -185,7 +185,7 @@ void UDPSystemClient::receiveAndStoreData(){
 my_socket.receive_from(boost::asio::buffer(v,5000), // Local do buffer
                         remote_endpoint); // Confs. do Cliente
 
-std::cout << "v:" << v << std::endl;
+
 dado.assign(v, std::strlen(v) + 1);
 
 
@@ -193,7 +193,6 @@ dado.assign(v, std::strlen(v) + 1);
 this->HostDados = dado;
 
 
-std::cout << "RECEBIDO:" << dado << std::endl;
 
 
 }
@@ -1127,7 +1126,6 @@ bool primeira = 1;
 
 	while(controle.getRodando()){
 std::thread enviando(&UDPSystemClient::sendOneDataToHost, &UDPmultiplayer, gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()) );
-std::cout << "enviando:" << gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()) << std::endl;
 //controleMultiplayer.updatePlayer();
 
 
