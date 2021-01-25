@@ -176,15 +176,16 @@ my_socket = udp::socket (io_service, // io service
 
 void UDPSystemClient::receiveAndStoreData(){
 
-  char v[6000];
+  char v[5000];
   std::string dado;
+	for (int i =0; i<5000; i++){v[i]='\0';}
   bool repetido = 0;
 
 
-my_socket.receive_from(boost::asio::buffer(v,6000), // Local do buffer
+my_socket.receive_from(boost::asio::buffer(v,5000), // Local do buffer
                         remote_endpoint); // Confs. do Cliente
 
-
+std::cout << "v:" << v << std::endl;
 dado.assign(v, std::strlen(v) + 1);
 
 

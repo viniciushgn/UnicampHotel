@@ -200,7 +200,7 @@ clientesConectados = 0;
 }
 
 void UDPSystem::receiveAndStoreDataAndClients(){
-
+	std::string temp;
   char v[5000];
 	for (int i =0; i<5000; i++){v[i]='\0';}
   std::string dado;
@@ -235,7 +235,12 @@ if(!repetido){
 this->dadosAtualizados.clear();
 this->dadosAtualizados += this->meuDado;
 
-for (const auto &piece : this->clientesDados) this->dadosAtualizados += piece;
+for(int m = 0; m < clientesDados.size(); m++){
+	temp = this->clientesDados[m];
+	temp = temp.c_str();
+	this->dadosAtualizados += temp;
+}
+
 
 
 
@@ -262,6 +267,7 @@ void UDPSystem::sendOneDataToAllClients(std::string dadoEnviar){
 
     for(int m = 0; m < clientes.size(); m++){
       my_socket.send_to(boost::asio::buffer(dadoEnviar), clientes[m]);
+			std::cout << "mandando para " << m << ":" << dadoEnviar << std::endl;
     }
 
 
