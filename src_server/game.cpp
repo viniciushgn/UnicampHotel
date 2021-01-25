@@ -5,23 +5,23 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <chrono>//tempo para igualar o periodo de cada game loop
-#include <thread>// std::this_thread::sleep_for
-#include <memory>//lidar com threads
-
+#include <chrono> //tempo para igualar o periodo de cada game loop
+#include <thread> // std::this_thread::sleep_for
+#include <memory> //lidar com threads
 
 //
 #include <boost/asio.hpp> //MULTIPLAYER
 using boost::asio::ip::udp;
 
-#include <sstream>//Parse da string recebida pelo server
+#include <sstream> //Parse da string recebida pelo server
 
 /*---------------------------MODEL------------------------------------------------*/
 
-class multiplayerSprite{
+class multiplayerSprite
+{
 public:
-	int posX,posY; //posicao do canto inferior esquerdo do sprite
-	int sizeX,sizeY;
+	int posX, posY; //posicao do canto inferior esquerdo do sprite
+	int sizeX, sizeY;
 	std::string spritePath;
 	int spritePosX, spritePosY;
 	int spriteSizeX, spriteSizeY;
@@ -29,30 +29,30 @@ public:
 	int indexLocal;
 
 	multiplayerSprite(int inputPosX, int inputPosY, int inputSizeX, int inputSizeY,
-	std::string inputSpritePath, int inputSpritePosX, int inputSpritePosY, int inputSpriteSizeX, int inputSpriteSizeY, int nIndexLocal, int nID );
-  void updateSprite(int nposX, int nposY, int nsizeX, int nsizeY, int nspritePosX, int nspritePosY, int nspriteSizeX, int nSpriteSizeY, int nindexLocal, int nID);
-
+										std::string inputSpritePath, int inputSpritePosX, int inputSpritePosY, int inputSpriteSizeX, int inputSpriteSizeY, int nIndexLocal, int nID);
+	void updateSprite(int nposX, int nposY, int nsizeX, int nsizeY, int nspritePosX, int nspritePosY, int nspriteSizeX, int nSpriteSizeY, int nindexLocal, int nID);
 };
 
 multiplayerSprite::multiplayerSprite(int inputPosX, int inputPosY, int inputSizeX,
-int inputSizeY,std::string inputSpritePath, int inputSpritePosX, int inputSpritePosY,
-int inputSpriteSizeX, int inputSpriteSizeY, int nIndexLocal, int nID){
+																		 int inputSizeY, std::string inputSpritePath, int inputSpritePosX, int inputSpritePosY,
+																		 int inputSpriteSizeX, int inputSpriteSizeY, int nIndexLocal, int nID)
+{
 
-this->posX = inputPosX;
-this->posY = inputPosY;
-this->sizeX = inputSizeX;
-this->sizeY = inputSizeY;
-this->spritePath = inputSpritePath;
-this->spritePosX = inputSpritePosX;
-this->spritePosY = inputSpritePosY;
-this->spriteSizeX = inputSpriteSizeX;
-this->spriteSizeY = inputSpriteSizeY;
-this->ID = nID;
-this->indexLocal = nIndexLocal;
-
+	this->posX = inputPosX;
+	this->posY = inputPosY;
+	this->sizeX = inputSizeX;
+	this->sizeY = inputSizeY;
+	this->spritePath = inputSpritePath;
+	this->spritePosX = inputSpritePosX;
+	this->spritePosY = inputSpritePosY;
+	this->spriteSizeX = inputSpriteSizeX;
+	this->spriteSizeY = inputSpriteSizeY;
+	this->ID = nID;
+	this->indexLocal = nIndexLocal;
 }
 
-void multiplayerSprite::updateSprite(int nposX, int nposY, int nsizeX, int nsizeY, int nspritePosX, int nspritePosY, int nspriteSizeX, int nSpriteSizeY, int nindexLocal, int nID){
+void multiplayerSprite::updateSprite(int nposX, int nposY, int nsizeX, int nsizeY, int nspritePosX, int nspritePosY, int nspriteSizeX, int nSpriteSizeY, int nindexLocal, int nID)
+{
 	this->posX = nposX;
 	this->posY = nposY;
 	this->sizeX = nsizeX;
@@ -63,425 +63,439 @@ void multiplayerSprite::updateSprite(int nposX, int nposY, int nsizeX, int nsize
 	this->spriteSizeY = nSpriteSizeY;
 	this->ID = nID;
 	this->indexLocal = nindexLocal;
-
 }
 
-
-class Multiplayer{
+class Multiplayer
+{
 private:
 	std::vector<multiplayerSprite> listaDeJogadores;
 	std::string dadosAtualizados;
 	int IDmultiplayer;
 	int numeroConectados;
+
 public:
-void updatePlayer();
-std::vector<multiplayerSprite> getListaDeJogadores();
-int getIDMultiplayer();
-Multiplayer();
-void setDadosAtualizados(std::string dado, int conectados);
-void addSprite(multiplayerSprite add);
+	void updatePlayer();
+	std::vector<multiplayerSprite> getListaDeJogadores();
+	int getIDMultiplayer();
+	Multiplayer();
+	void setDadosAtualizados(std::string dado, int conectados);
+	void addSprite(multiplayerSprite add);
 };
 
-void Multiplayer::setDadosAtualizados(std::string dado, int conectados){
+void Multiplayer::setDadosAtualizados(std::string dado, int conectados)
+{
 
-this->dadosAtualizados = dado;
-this->numeroConectados = conectados;
+	this->dadosAtualizados = dado;
+	this->numeroConectados = conectados;
 }
 
-void Multiplayer::addSprite(multiplayerSprite add){
+void Multiplayer::addSprite(multiplayerSprite add)
+{
 	this->listaDeJogadores.push_back(add);
 }
 
-int Multiplayer::getIDMultiplayer(){
+int Multiplayer::getIDMultiplayer()
+{
 	return this->IDmultiplayer;
 }
 
-Multiplayer::Multiplayer(){
+Multiplayer::Multiplayer()
+{
 	std::cout << "¸¸♬·¯·♪·¯·♫¸¸ Identidade Online¸¸♫·¯·♪¸♩·¯·♬¸¸" << std::endl;
 	std::cout << "Digite seu ID [inteiro positivo]:" << std::endl;
 	std::cin >> this->IDmultiplayer;
 }
 
-std::vector<multiplayerSprite> Multiplayer::getListaDeJogadores(){
+std::vector<multiplayerSprite> Multiplayer::getListaDeJogadores()
+{
 	return this->listaDeJogadores;
 }
 
-void Multiplayer::updatePlayer(){
-int tamanho = 0;
+void Multiplayer::updatePlayer()
+{
+	int tamanho = 0;
 
 	this->listaDeJogadores.clear();
 	std::vector<std::string> parsed;
 	std::stringstream ss(this->dadosAtualizados);
 
-	while (ss.good()) {
-	  std::string substr;
-	  std::getline(ss, substr, ',');
-	  parsed.push_back(substr);
-	  }
-
-//TESTANDO
-
-//FIMTESTE
-
-tamanho = (parsed.size()/10) -1;
-for(int k = 0; k <= tamanho; k++){
-
-
-
-
-	if(std::stoi(parsed[9+ 10*k]) != this->IDmultiplayer){
-
-
-	multiplayerSprite adicionar(std::stoi(parsed[0 + 10*k]), std::stoi(parsed[1+ 10*k]), std::stoi(parsed[2+ 10*k]), std::stoi(parsed[3+ 10*k]),"../assets/spriteplayer.png", std::stoi(parsed[4+ 10*k]), std::stoi(parsed[5+ 10*k]), std::stoi(parsed[6+ 10*k]), std::stoi(parsed[7+ 10*k]), std::stoi(parsed[8+ 10*k]), std::stoi(parsed[9+ 10*k]));
-
-		this->listaDeJogadores.push_back(adicionar);
-	}
+	while (ss.good())
+	{
+		std::string substr;
+		std::getline(ss, substr, ',');
+		parsed.push_back(substr);
 	}
 
+	//TESTANDO
 
+	//FIMTESTE
 
+	tamanho = (parsed.size() / 10) - 1;
+	for (int k = 0; k <= tamanho; k++)
+	{
 
+		if (std::stoi(parsed[9 + 10 * k]) != this->IDmultiplayer)
+		{
+
+			multiplayerSprite adicionar(std::stoi(parsed[0 + 10 * k]), std::stoi(parsed[1 + 10 * k]), std::stoi(parsed[2 + 10 * k]), std::stoi(parsed[3 + 10 * k]), "../assets/spriteplayer.png", std::stoi(parsed[4 + 10 * k]), std::stoi(parsed[5 + 10 * k]), std::stoi(parsed[6 + 10 * k]), std::stoi(parsed[7 + 10 * k]), std::stoi(parsed[8 + 10 * k]), std::stoi(parsed[9 + 10 * k]));
+
+			this->listaDeJogadores.push_back(adicionar);
+		}
+	}
 }
-
 
 //UDP---------------------------------------------------------------------------
 
-class UDPSystem{
+class UDPSystem
+{
 private:
-std::vector<udp::endpoint> clientes;
-std::vector<std::string> clientesDados;
+	std::vector<udp::endpoint> clientes;
+	std::vector<std::string> clientesDados;
+
 public:
-boost::asio::io_service io_service;
-udp::endpoint local_endpoint;
-udp::endpoint remote_endpoint;
-udp::socket my_socket;
-int clientesConectados;
-std::string dadosAtualizados;
-std::string meuDado;
+	boost::asio::io_service io_service;
+	udp::endpoint local_endpoint;
+	udp::endpoint remote_endpoint;
+	udp::socket my_socket;
+	int clientesConectados;
+	std::string dadosAtualizados;
+	std::string meuDado;
 
-UDPSystem();
-void sendAllDataToAllClients();
-void receiveAndStoreDataAndClients();
-void sendOneDataToAllClients(std::string dadoEnviar);
-void atualizarMeuDado(std::string myData);
-
+	UDPSystem();
+	void sendAllDataToAllClients();
+	void receiveAndStoreDataAndClients();
+	void sendOneDataToAllClients(std::string dadoEnviar);
+	void atualizarMeuDado(std::string myData);
 };
 
-void UDPSystem::atualizarMeuDado(std::string myData){
-this->meuDado = myData;
-
+void UDPSystem::atualizarMeuDado(std::string myData)
+{
+	this->meuDado = myData;
 }
 
-UDPSystem::UDPSystem():local_endpoint(udp::v4(), 9001), remote_endpoint(udp::v4(), 0), my_socket(io_service){
+UDPSystem::UDPSystem() : local_endpoint(udp::v4(), 9001), remote_endpoint(udp::v4(), 0), my_socket(io_service)
+{
 
-my_socket = udp::socket (io_service, // io service
-  local_endpoint); // endpoint
+	my_socket = udp::socket(io_service,			 // io service
+													local_endpoint); // endpoint
 
-clientesConectados = 0;
-
+	clientesConectados = 0;
 }
 
-void UDPSystem::receiveAndStoreDataAndClients(){
+void UDPSystem::receiveAndStoreDataAndClients()
+{
 	std::string temp;
-  char v[5000];
-	for (int i =0; i<5000; i++){v[i]='\0';}
-  std::string dado;
-  bool repetido = 0;
+	char v[5000];
+	for (int i = 0; i < 5000; i++)
+	{
+		v[i] = '\0';
+	}
+	std::string dado;
+	bool repetido = 0;
 
+	my_socket.receive_from(boost::asio::buffer(v, 5000), // Local do buffer
+												 remote_endpoint);						 // Confs. do Cliente
 
-    my_socket.receive_from(boost::asio::buffer(v,5000), // Local do buffer
-                        remote_endpoint); // Confs. do Cliente
+	dado.assign(v, std::strlen(v) + 1);
 
+	for (int n = 0; n < clientes.size(); n++)
+	{
+		if (remote_endpoint.address() == clientes[n].address() || dado == clientesDados[n])
+		{
+			repetido = 1;
+			clientesDados[n] = dado;
+			clientes[n] = remote_endpoint;
+		}
+	}
 
-dado.assign(v, std::strlen(v) + 1);
+	if (!repetido)
+	{
 
+		clientes.push_back(remote_endpoint);
+		std::cout << clientes[0] << "<- New Client IP Connected!" << std::endl;
+		clientesConectados++;
+		this->clientesDados.push_back(dado);
+		repetido = 0;
+	}
 
-for(int n = 0; n < clientes.size(); n++){
-  if(remote_endpoint.address() == clientes[n].address() || dado == clientesDados[n]){
-    repetido = 1;
-    clientesDados[n] = dado;
-    clientes[n] = remote_endpoint;
-  }
+	this->dadosAtualizados.clear();
+	this->dadosAtualizados += this->meuDado;
+
+	for (int m = 0; m < clientesDados.size(); m++)
+	{
+		temp = this->clientesDados[m];
+		temp = temp.c_str();
+		this->dadosAtualizados += temp;
+	}
 }
 
+void UDPSystem::sendAllDataToAllClients()
+{
 
-if(!repetido){
+	for (int n = 0; n < clientesDados.size(); n++)
+	{
 
-  clientes.push_back(remote_endpoint);
-  std::cout << clientes[0] << "<- New Client IP Connected!" << std::endl;
-  clientesConectados++;
-  this->clientesDados.push_back(dado);
-  repetido = 0;
+		for (int m = 0; m < clientes.size(); m++)
+		{
+			my_socket.send_to(boost::asio::buffer(clientesDados[n]), clientes[m]);
+		}
+	}
 }
 
-this->dadosAtualizados.clear();
-this->dadosAtualizados += this->meuDado;
+void UDPSystem::sendOneDataToAllClients(std::string dadoEnviar)
+{
 
-for(int m = 0; m < clientesDados.size(); m++){
-	temp = this->clientesDados[m];
-	temp = temp.c_str();
-	this->dadosAtualizados += temp;
-}
-
-
-
-
-}
-
-void UDPSystem::sendAllDataToAllClients(){
-
-
-for(int n = 0; n < clientesDados.size(); n++){
-
-  for(int m = 0; m < clientes.size(); m++){
-    my_socket.send_to(boost::asio::buffer(clientesDados[n]), clientes[m]);
-  }
-
-}
-
-
-}
-
-void UDPSystem::sendOneDataToAllClients(std::string dadoEnviar){
-
-
-
-
-    for(int m = 0; m < clientes.size(); m++){
-      my_socket.send_to(boost::asio::buffer(dadoEnviar), clientes[m]);
-
-    }
-
-
-
-
+	for (int m = 0; m < clientes.size(); m++)
+	{
+		my_socket.send_to(boost::asio::buffer(dadoEnviar), clientes[m]);
+	}
 }
 //UDP---------------------------------------------------------------------------
-
-
 
 //gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,IDmultiplayer)
 
-
-
-
-
 // Classe Sprites Simples:
-class SpriteSimples{
-	private:
-		int posX,posY;//posicao do canto inferior esquerdo do sprite.
-		int sizeX,sizeY;
-		std::string spritePath;//caminho para o arquivo da sprite
-		bool isCollider;
-		bool isLinker;
-		std::string linkPath;
-	public:
-		void SpriteData(int px, int py, int sx, int sy , std::string sp);
-		int getPosX();
-		int getPosY();
-		int getSizeX();
-		int getSizeY();
-		std::string getSpritePath();
-		void setCollider();
-		bool getCollider();
-		void setLinker(std::string path);
-		bool getIsLinker();
-		std::string getLinkPath();
+class SpriteSimples
+{
+private:
+	int posX, posY; //posicao do canto inferior esquerdo do sprite.
+	int sizeX, sizeY;
+	std::string spritePath; //caminho para o arquivo da sprite
+	bool isCollider;
+	bool isLinker;
+	std::string linkPath;
+
+public:
+	void SpriteData(int px, int py, int sx, int sy, std::string sp);
+	int getPosX();
+	int getPosY();
+	int getSizeX();
+	int getSizeY();
+	std::string getSpritePath();
+	void setCollider();
+	bool getCollider();
+	void setLinker(std::string path);
+	bool getIsLinker();
+	std::string getLinkPath();
 };
 
-std::string SpriteSimples::getLinkPath(){
-  return this->linkPath;
+std::string SpriteSimples::getLinkPath()
+{
+	return this->linkPath;
 }
 
-bool SpriteSimples::getIsLinker(){
-  return this->isLinker;
+bool SpriteSimples::getIsLinker()
+{
+	return this->isLinker;
 }
 
-void SpriteSimples::setLinker(std::string path){
-  this->isLinker = true;
-  this->linkPath = path;
+void SpriteSimples::setLinker(std::string path)
+{
+	this->isLinker = true;
+	this->linkPath = path;
 }
 
-
-bool SpriteSimples::getCollider(){
-  return this->isCollider;
+bool SpriteSimples::getCollider()
+{
+	return this->isCollider;
 }
 
-void SpriteSimples::setCollider(){
-  this->isCollider = true;
+void SpriteSimples::setCollider()
+{
+	this->isCollider = true;
 }
 
-void SpriteSimples::SpriteData(int px, int py, int sx, int sy , std::string sp){
+void SpriteSimples::SpriteData(int px, int py, int sx, int sy, std::string sp)
+{
 	this->posX = px;
 	this->posY = py;
 	this->sizeX = sx;
 	this->sizeY = sy;
-	this->spritePath = sp;//caminho para o arquivo de imagem da sprite
+	this->spritePath = sp; //caminho para o arquivo de imagem da sprite
 	this->isCollider = false;
 	this->isLinker = false;
 }
 
-int SpriteSimples::getPosX(){
-  return this->posX;
+int SpriteSimples::getPosX()
+{
+	return this->posX;
 }
 
-int SpriteSimples::getPosY(){
-  return this->posY;
+int SpriteSimples::getPosY()
+{
+	return this->posY;
 }
 
-int SpriteSimples::getSizeX(){
-  return this->sizeX;
+int SpriteSimples::getSizeX()
+{
+	return this->sizeX;
 }
 
-int SpriteSimples::getSizeY(){
-  return this->sizeY;
+int SpriteSimples::getSizeY()
+{
+	return this->sizeY;
 }
 
-std::string SpriteSimples::getSpritePath(){
-  return this->spritePath;
+std::string SpriteSimples::getSpritePath()
+{
+	return this->spritePath;
 }
 
 // Classe Player:
-class Player{
-	private:
-		int posX,posY;//posicao do canto inferior esquerdo do sprite.
-		int sizeX,sizeY;
-		int vel; //unidades somadas a posicao em cada frame
-		int velMax;//velocidade andando
-		int dir; //0 - Norte 1- Nordeste 2- Leste 3- Sudeste 4- Sul 5- Sudoeste 6- Oeste 7- Noroeste
-		std::string spritePath;//caminho para o arquivo da sprite
-		std::vector<int> spritePointsX;//pontos topleft da sprite
-		std::vector<int> spritePointsY;//pontos topleft da sprite
-		int spriteSizeX;
-		int spriteSizeY;
-		int estadoSprite;
-		int estadoSpriteTimer;
-		bool linkPendente;
-		std::string linkPath;
-	public:
-		void PlayerData(int px, int py, int sx, int sy, std::string sp, int velIni, int velMaxIni, int dirIni);
-		int getPosX();
-		int getPosY();
-		int getSizeX();
-		int getSizeY();
-		int getVel();
-		void setVel(int novaVel);
-		int getDir();
-		void setDir(int novaDir);
-		std::string getSpritePath();
-		int getVelMax();
-		void addPos(int nx, int ny);
-		void subPos(int nx, int ny);
-		void addSpritePoint(int ix, int iy);
-		int getSpritePointX(int n);
-		int getSpritePointY(int n);
-		void setSpriteSize(int nx, int ny);
-		int getSpriteSizeX();
-		int getSpriteSizeY();
-		void setEstadoSprite(int i);
-		int getEstadoSprite();
-		void incEstadoTimer();
-		int getEstadoTimer();
-		void resetEstadoTimer();
-		void setLinker(std::string path);
-		bool getIsLinker();
-		std::string getLinkPath();
-		bool getLinkPendente();
-		void setLinkPendente(std::string path);
+class Player
+{
+private:
+	int posX, posY; //posicao do canto inferior esquerdo do sprite.
+	int sizeX, sizeY;
+	int vel;												//unidades somadas a posicao em cada frame
+	int velMax;											//velocidade andando
+	int dir;												//0 - Norte 1- Nordeste 2- Leste 3- Sudeste 4- Sul 5- Sudoeste 6- Oeste 7- Noroeste
+	std::string spritePath;					//caminho para o arquivo da sprite
+	std::vector<int> spritePointsX; //pontos topleft da sprite
+	std::vector<int> spritePointsY; //pontos topleft da sprite
+	int spriteSizeX;
+	int spriteSizeY;
+	int estadoSprite;
+	int estadoSpriteTimer;
+	bool linkPendente;
+	std::string linkPath;
 
-		std::string returnPacket(int local, int id);
+public:
+	void PlayerData(int px, int py, int sx, int sy, std::string sp, int velIni, int velMaxIni, int dirIni);
+	int getPosX();
+	int getPosY();
+	int getSizeX();
+	int getSizeY();
+	int getVel();
+	void setVel(int novaVel);
+	int getDir();
+	void setDir(int novaDir);
+	std::string getSpritePath();
+	int getVelMax();
+	void addPos(int nx, int ny);
+	void subPos(int nx, int ny);
+	void addSpritePoint(int ix, int iy);
+	int getSpritePointX(int n);
+	int getSpritePointY(int n);
+	void setSpriteSize(int nx, int ny);
+	int getSpriteSizeX();
+	int getSpriteSizeY();
+	void setEstadoSprite(int i);
+	int getEstadoSprite();
+	void incEstadoTimer();
+	int getEstadoTimer();
+	void resetEstadoTimer();
+	void setLinker(std::string path);
+	bool getIsLinker();
+	std::string getLinkPath();
+	bool getLinkPendente();
+	void setLinkPendente(std::string path);
+
+	std::string returnPacket(int local, int id);
 };
 
+std::string Player::returnPacket(int local, int id)
+{
 
-std::string Player::returnPacket(int local, int id){
+	std::string pack = std::to_string(this->posX) + "," + std::to_string(this->posY) + "," + std::to_string(this->sizeX) + "," + std::to_string(this->sizeY) + ","
 
-std::string pack = std::to_string(this->posX) + "," + std::to_string(this->posY)
-+ "," + std::to_string(this->sizeX) + "," + std::to_string(this->sizeY) + ","
+										 + std::to_string(this->spritePointsX[this->estadoSprite]) + "," + std::to_string(this->spritePointsY[this->estadoSprite]) + ","
 
-+ std::to_string(this->spritePointsX[this->estadoSprite]) + "," + std::to_string(this->spritePointsY[this->estadoSprite]) + ","
+										 + std::to_string(this->spriteSizeX) + "," + std::to_string(this->spriteSizeY) + "," + std::to_string(local) + "," + std::to_string(id) + ",";
 
-+ std::to_string(this->spriteSizeX) + "," + std::to_string(this->spriteSizeY) + ","
-+ std::to_string(local) + "," + std::to_string(id) + ",";
-
-return pack;
-
+	return pack;
 }
 
-
-void Player::setLinkPendente(std::string path){
-  this->linkPath = path;
-  this->linkPendente = true;
+void Player::setLinkPendente(std::string path)
+{
+	this->linkPath = path;
+	this->linkPendente = true;
 }
 
-bool Player::getLinkPendente(){
-  return this->linkPendente;
+bool Player::getLinkPendente()
+{
+	return this->linkPendente;
 }
 
-std::string Player::getLinkPath(){
-  this->linkPendente = false;
-  return this->linkPath;
+std::string Player::getLinkPath()
+{
+	this->linkPendente = false;
+	return this->linkPath;
 }
 
-
-void Player::setLinker(std::string path){
-  this->linkPath = path;
+void Player::setLinker(std::string path)
+{
+	this->linkPath = path;
 }
 
-void Player::resetEstadoTimer(){
-  this->estadoSpriteTimer = 0;
+void Player::resetEstadoTimer()
+{
+	this->estadoSpriteTimer = 0;
 }
 
-void Player::incEstadoTimer(){
-  this->estadoSpriteTimer = this->estadoSpriteTimer + 1;
+void Player::incEstadoTimer()
+{
+	this->estadoSpriteTimer = this->estadoSpriteTimer + 1;
 }
 
-int Player::getEstadoTimer(){
-  return this->estadoSpriteTimer;
+int Player::getEstadoTimer()
+{
+	return this->estadoSpriteTimer;
 }
 
-void Player::setEstadoSprite(int i){
-  this->estadoSprite = i;
+void Player::setEstadoSprite(int i)
+{
+	this->estadoSprite = i;
 }
 
-int Player::getEstadoSprite(){
-  return this->estadoSprite;
+int Player::getEstadoSprite()
+{
+	return this->estadoSprite;
 }
 
-int Player::getSpriteSizeY(){
-  return this->spriteSizeY;
+int Player::getSpriteSizeY()
+{
+	return this->spriteSizeY;
 }
 
-int Player::getSpriteSizeX(){
-  return this->spriteSizeX;
+int Player::getSpriteSizeX()
+{
+	return this->spriteSizeX;
 }
 
-void Player::setSpriteSize(int nx, int ny){
-  this->spriteSizeX = nx;
-  this->spriteSizeY = ny;
+void Player::setSpriteSize(int nx, int ny)
+{
+	this->spriteSizeX = nx;
+	this->spriteSizeY = ny;
 }
 
-int Player::getSpritePointX(int n){
-	if(n > this->spritePointsX.size()){
+int Player::getSpritePointX(int n)
+{
+	if (n > this->spritePointsX.size())
+	{
 		printf("erro aqui\n");
 	}
 	return this->spritePointsX[n];
 }
 
-int Player::getSpritePointY(int n){
+int Player::getSpritePointY(int n)
+{
 	return this->spritePointsY[n];
 }
 
-void Player::addSpritePoint(int ix, int iy){
+void Player::addSpritePoint(int ix, int iy)
+{
 	this->spritePointsX.push_back(ix);
 	this->spritePointsY.push_back(iy);
 }
 
-void Player::PlayerData(int px, int py, int sx, int sy, std::string sp, int velIni, int velMaxIni, int dirIni){
+void Player::PlayerData(int px, int py, int sx, int sy, std::string sp, int velIni, int velMaxIni, int dirIni)
+{
 	this->posX = px;
 	this->posY = py;
 	this->sizeX = sx;
 	this->sizeY = sy;
-	this->spritePath = sp;//caminho para o arquivo de imagem da sprite
+	this->spritePath = sp; //caminho para o arquivo de imagem da sprite
 	this->vel = velIni;
 	this->velMax = velMaxIni;
 	this->dir = dirIni;
@@ -490,482 +504,558 @@ void Player::PlayerData(int px, int py, int sx, int sy, std::string sp, int velI
 	this->linkPendente = false;
 }
 
-int Player::getPosX(){
-  return this->posX;
+int Player::getPosX()
+{
+	return this->posX;
 }
 
-int Player::getPosY(){
-  return this->posY;
+int Player::getPosY()
+{
+	return this->posY;
 }
 
-int Player::getSizeX(){
-  return this->sizeX;
+int Player::getSizeX()
+{
+	return this->sizeX;
 }
 
-int Player::getSizeY(){
-  return this->sizeY;
+int Player::getSizeY()
+{
+	return this->sizeY;
 }
 
-std::string Player::getSpritePath(){
-  return this->spritePath;
+std::string Player::getSpritePath()
+{
+	return this->spritePath;
 }
-void Player::setVel(int novaVel){
-  this->vel = novaVel;
-}
-
-int Player::getVel(){
-  return this->vel;
+void Player::setVel(int novaVel)
+{
+	this->vel = novaVel;
 }
 
-void Player::setDir(int novaDir){
-  this->dir = novaDir;
+int Player::getVel()
+{
+	return this->vel;
 }
 
-int Player::getDir(){
-  return this->dir;
+void Player::setDir(int novaDir)
+{
+	this->dir = novaDir;
 }
 
-int Player::getVelMax(){
-  return this->velMax;
+int Player::getDir()
+{
+	return this->dir;
 }
 
-void Player::addPos(int nx, int ny){
-  this->posX = this->posX + nx;
-  this->posY = this->posY + ny;
+int Player::getVelMax()
+{
+	return this->velMax;
 }
 
-void Player::subPos(int nx, int ny){
-  this->posX = this->posX - nx;
-  this->posY = this->posY - ny;
+void Player::addPos(int nx, int ny)
+{
+	this->posX = this->posX + nx;
+	this->posY = this->posY + ny;
 }
 
+void Player::subPos(int nx, int ny)
+{
+	this->posX = this->posX - nx;
+	this->posY = this->posY - ny;
+}
 
 // Classe Room:
-class Room {
-	public:
-		std::string roomName;
-		std::vector<SpriteSimples> roomObjects;
-		Player & playerCharacter;
-		SpriteSimples & backgroundScene;
-		//
-		Room(std::string iroomName, Player & iplayerCharacter,SpriteSimples & ibackgroundScene):roomName(iroomName), playerCharacter(iplayerCharacter), backgroundScene(ibackgroundScene){};
-		void AddName(std::string iroomName);
-		void AddObject(SpriteSimples & objetoAdicionado);
+class Room
+{
+public:
+	std::string roomName;
+	std::vector<SpriteSimples> roomObjects;
+	Player &playerCharacter;
+	SpriteSimples &backgroundScene;
+	//
+	Room(std::string iroomName, Player &iplayerCharacter, SpriteSimples &ibackgroundScene) : roomName(iroomName), playerCharacter(iplayerCharacter), backgroundScene(ibackgroundScene){};
+	void AddName(std::string iroomName);
+	void AddObject(SpriteSimples &objetoAdicionado);
 };
 
-void Room::AddName(std::string iroomName){
-  this->roomName = iroomName;
+void Room::AddName(std::string iroomName)
+{
+	this->roomName = iroomName;
 }
 
-void Room::AddObject(SpriteSimples & objetoAdicionado){
-  this->roomObjects.push_back(objetoAdicionado);
+void Room::AddObject(SpriteSimples &objetoAdicionado)
+{
+	this->roomObjects.push_back(objetoAdicionado);
 }
 
 /*--------------------------------------------------------------------------------*/
 
-
-
 /*-----------------------------VIEW----------------------------------------------*/
-class View {
-	private:
-		//Setando Window e Renderer
-		SDL_Window* window;
-		SDL_Renderer* renderer;
+class View
+{
+private:
+	//Setando Window e Renderer
+	SDL_Window *window;
+	SDL_Renderer *renderer;
 
-		SDL_Rect targetPlayer;
-		SDL_Rect targetPlayerSprite;
-		SDL_Rect targetBackground;
+	SDL_Rect targetPlayer;
+	SDL_Rect targetPlayerSprite;
+	SDL_Rect targetBackground;
 
-		SDL_Texture *texturePlayer;
-		SDL_Texture *textureBackground;
-		SDL_Rect targetObjetos;
-		std::vector<SDL_Texture *> textureObjetos;
+	SDL_Texture *texturePlayer;
+	SDL_Texture *textureBackground;
+	SDL_Rect targetObjetos;
+	std::vector<SDL_Texture *> textureObjetos;
 
-		SDL_Rect targetNPC;
-		SDL_Rect targetNPCSprite;
-		std::vector<SDL_Texture *> textureNPC;
-		int indexPlayer;
+	SDL_Rect targetNPC;
+	SDL_Rect targetNPCSprite;
+	std::vector<SDL_Texture *> textureNPC;
+	int indexPlayer;
 
-	public:
-		int initView(int posX, int posY, int sizeX, int sizeY);
-		void setUpTexture(Room & lugar);
-		void resetTexture();
-		void render(Room & lugar, std::vector<multiplayerSprite>  nlistaDeJogadores);
-		void changeName(Room & lugar);
-		void setindexPlayer(int nindex);
+public:
+	int initView(int posX, int posY, int sizeX, int sizeY);
+	void setUpTexture(Room &lugar);
+	void resetTexture();
+	void render(Room &lugar, std::vector<multiplayerSprite> nlistaDeJogadores);
+	void changeName(Room &lugar);
+	void setindexPlayer(int nindex);
 
-		void setUpNPC(std::vector<multiplayerSprite> nlistaDeJogadores);
-		void resetNPC();
-		void renderNPC( std::vector<multiplayerSprite> listaDeJogadores);
+	void setUpNPC(std::vector<multiplayerSprite> nlistaDeJogadores);
+	void resetNPC();
+	void renderNPC(std::vector<multiplayerSprite> listaDeJogadores);
 };
 
-
-void View::setindexPlayer(int nindex){
+void View::setindexPlayer(int nindex)
+{
 	this->indexPlayer = nindex;
 }
 
-void View::setUpNPC(std::vector<multiplayerSprite> nlistaDeJogadores){
-for(int iterator = 0; iterator < nlistaDeJogadores.size(); iterator++){
-	if(nlistaDeJogadores[iterator].indexLocal == this->indexPlayer){
-	textureNPC.push_back(IMG_LoadTexture(renderer, nlistaDeJogadores[iterator].spritePath.c_str()));
-}
-}
+void View::setUpNPC(std::vector<multiplayerSprite> nlistaDeJogadores)
+{
+	for (int iterator = 0; iterator < nlistaDeJogadores.size(); iterator++)
+	{
+		if (nlistaDeJogadores[iterator].indexLocal == this->indexPlayer)
+		{
+			textureNPC.push_back(IMG_LoadTexture(renderer, nlistaDeJogadores[iterator].spritePath.c_str()));
+		}
+	}
 }
 
-void View::resetNPC(){
-this->textureNPC.clear();
+void View::resetNPC()
+{
+	this->textureNPC.clear();
 }
 
-
-
-void View::changeName(Room & lugar){
+void View::changeName(Room &lugar)
+{
 	SDL_SetWindowTitle(this->window, lugar.roomName.c_str());
 }
 
-int View::initView(int posX, int posY, int sizeX, int sizeY){
+int View::initView(int posX, int posY, int sizeX, int sizeY)
+{
 	this->indexPlayer = 0;
-  //Inicializando SDL
-  if( SDL_Init(SDL_INIT_EVERYTHING) != 0){
-    std::cout << "Fail:" << SDL_GetError() << std::endl;
-    return -1;
-  }
+	//Inicializando SDL
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+	{
+		std::cout << "Fail:" << SDL_GetError() << std::endl;
+		return -1;
+	}
 
-  //Criando Janela
-  window = SDL_CreateWindow("Unicamp Hotel - HOST", posX,posY,sizeX,sizeY,0);
+	//Criando Janela
+	window = SDL_CreateWindow("Unicamp Hotel - HOST", posX, posY, sizeX, sizeY, 0);
 
-  if(window == nullptr){
-    std::cout << "Erro: " << SDL_GetError();
-    return -1;
-  }
+	if (window == nullptr)
+	{
+		std::cout << "Erro: " << SDL_GetError();
+		return -1;
+	}
 
-  //Criar e Inicializar Renderer
-  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-  if(renderer == nullptr){
-    std::cout << "Erro: " << SDL_GetError();
-    return -1;
-  }
+	//Criar e Inicializar Renderer
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	if (renderer == nullptr)
+	{
+		std::cout << "Erro: " << SDL_GetError();
+		return -1;
+	}
 
-  //Setando resolucao
-  SDL_RenderSetLogicalSize(renderer, sizeX, sizeY);
+	//Setando resolucao
+	SDL_RenderSetLogicalSize(renderer, sizeX, sizeY);
 
-  SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, 0);//pixel art interpolation
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, 0); //pixel art interpolation
 
-  return 0;
+	return 0;
 }
 
-void View::setUpTexture(Room & lugar){
-  targetPlayer.w = lugar.playerCharacter.getSizeX();
-  targetPlayer.h = lugar.playerCharacter.getSizeY();
+void View::setUpTexture(Room &lugar)
+{
+	targetPlayer.w = lugar.playerCharacter.getSizeX();
+	targetPlayer.h = lugar.playerCharacter.getSizeY();
 
-  targetBackground.w = lugar.backgroundScene.getSizeX();
-  targetBackground.h = lugar.backgroundScene.getSizeY();
+	targetBackground.w = lugar.backgroundScene.getSizeX();
+	targetBackground.h = lugar.backgroundScene.getSizeY();
 
-  targetPlayerSprite.w = lugar.playerCharacter.getSpriteSizeX();
-  targetPlayerSprite.h = lugar.playerCharacter.getSpriteSizeY();
-  targetPlayerSprite.x = lugar.playerCharacter.getSpritePointX(0);
-  targetPlayerSprite.y = lugar.playerCharacter.getSpritePointY(0);
+	targetPlayerSprite.w = lugar.playerCharacter.getSpriteSizeX();
+	targetPlayerSprite.h = lugar.playerCharacter.getSpriteSizeY();
+	targetPlayerSprite.x = lugar.playerCharacter.getSpritePointX(0);
+	targetPlayerSprite.y = lugar.playerCharacter.getSpritePointY(0);
 
-  // Carregando texturas
+	// Carregando texturas
 	//personagem
-  this->texturePlayer = IMG_LoadTexture(renderer, lugar.playerCharacter.getSpritePath().c_str());
+	this->texturePlayer = IMG_LoadTexture(renderer, lugar.playerCharacter.getSpritePath().c_str());
 	//fundo
-  this->textureBackground = IMG_LoadTexture(renderer, lugar.backgroundScene.getSpritePath().c_str());
-/*
+	this->textureBackground = IMG_LoadTexture(renderer, lugar.backgroundScene.getSpritePath().c_str());
+	/*
   int saberX;
   int saberY;
   SDL_QueryTexture(texture, nullptr, nullptr, &saberX, &saberY); //para saber info sobre a textura
 std::cout << "x:" << saberX << "y:" << saberY << std::endl;
 */
-	for(int iterator = 0; iterator < lugar.roomObjects.size(); iterator++){
+	for (int iterator = 0; iterator < lugar.roomObjects.size(); iterator++)
+	{
 		targetObjetos.x = lugar.roomObjects[iterator].getPosX();
 		targetObjetos.y = lugar.roomObjects[iterator].getPosY();
 		textureObjetos.push_back(IMG_LoadTexture(renderer, lugar.roomObjects[iterator].getSpritePath().c_str()));
 	}
 }
 
-void View::resetTexture(){
-  this->textureObjetos.clear();
+void View::resetTexture()
+{
+	this->textureObjetos.clear();
 }
 
-void View::render(Room & lugar, std::vector<multiplayerSprite> nlistaDeJogadores ){
-  targetPlayer.x = lugar.playerCharacter.getPosX();
-  targetPlayer.y = lugar.playerCharacter.getPosY();
+void View::render(Room &lugar, std::vector<multiplayerSprite> nlistaDeJogadores)
+{
+	targetPlayer.x = lugar.playerCharacter.getPosX();
+	targetPlayer.y = lugar.playerCharacter.getPosY();
 
-  targetPlayerSprite.x = lugar.playerCharacter.getSpritePointX(lugar.playerCharacter.getEstadoSprite());
-  targetPlayerSprite.y = lugar.playerCharacter.getSpritePointY(lugar.playerCharacter.getEstadoSprite());
+	targetPlayerSprite.x = lugar.playerCharacter.getSpritePointX(lugar.playerCharacter.getEstadoSprite());
+	targetPlayerSprite.y = lugar.playerCharacter.getSpritePointY(lugar.playerCharacter.getEstadoSprite());
 
-  targetBackground.x = lugar.backgroundScene.getPosX();
-  targetBackground.y = lugar.backgroundScene.getPosY();
+	targetBackground.x = lugar.backgroundScene.getPosX();
+	targetBackground.y = lugar.backgroundScene.getPosY();
 
 	// Desenhar a cena
-  SDL_RenderClear(renderer);
-  SDL_SetRenderDrawColor(renderer,40,40,40,255);
+	SDL_RenderClear(renderer);
+	SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
 
 	//1- Fundo
-  SDL_RenderCopy(renderer, textureBackground, nullptr, &targetBackground);
+	SDL_RenderCopy(renderer, textureBackground, nullptr, &targetBackground);
 	//2 - Personagem
-  SDL_RenderCopy(renderer, texturePlayer, &targetPlayerSprite, &targetPlayer);
+	SDL_RenderCopy(renderer, texturePlayer, &targetPlayerSprite, &targetPlayer);
 	//3 - Objetos
 
-
-	for(int iterator = 0; iterator < lugar.roomObjects.size(); iterator++){
+	for (int iterator = 0; iterator < lugar.roomObjects.size(); iterator++)
+	{
 		targetObjetos.x = lugar.roomObjects[iterator].getPosX();
 		targetObjetos.y = lugar.roomObjects[iterator].getPosY();
 		targetObjetos.w = lugar.roomObjects[iterator].getSizeX();
 		targetObjetos.h = lugar.roomObjects[iterator].getSizeY();
 
-
 		SDL_RenderCopy(renderer, textureObjetos[iterator], nullptr, &targetObjetos);
 
-		if((lugar.roomObjects[iterator].getPosY() + lugar.roomObjects[iterator].getSizeY()) < (lugar.playerCharacter.getPosY() + lugar.playerCharacter.getSizeY())){
-		  if(   (lugar.playerCharacter.getPosX() < (lugar.roomObjects[iterator].getPosX() + lugar.roomObjects[iterator].getSizeX())) && ((lugar.playerCharacter.getPosX() +  lugar.playerCharacter.getSizeX()) > lugar.roomObjects[iterator].getPosX()) ){
-		    if(!lugar.playerCharacter.getLinkPendente()){
-		    SDL_RenderCopy(renderer, texturePlayer, &targetPlayerSprite, &targetPlayer);//se jogador esta na frente do objeto, renderizeo de novo
-		  	}
-		  }
+		if ((lugar.roomObjects[iterator].getPosY() + lugar.roomObjects[iterator].getSizeY()) < (lugar.playerCharacter.getPosY() + lugar.playerCharacter.getSizeY()))
+		{
+			if ((lugar.playerCharacter.getPosX() < (lugar.roomObjects[iterator].getPosX() + lugar.roomObjects[iterator].getSizeX())) && ((lugar.playerCharacter.getPosX() + lugar.playerCharacter.getSizeX()) > lugar.roomObjects[iterator].getPosX()))
+			{
+				if (!lugar.playerCharacter.getLinkPendente())
+				{
+					SDL_RenderCopy(renderer, texturePlayer, &targetPlayerSprite, &targetPlayer); //se jogador esta na frente do objeto, renderizeo de novo
+				}
+			}
 		}
 	}
 
-//NPC-------------------------------------------------------------
-for(int iterator = 0; iterator < nlistaDeJogadores.size(); iterator++){
+	//NPC-------------------------------------------------------------
+	for (int iterator = 0; iterator < nlistaDeJogadores.size(); iterator++)
+	{
 
+		if (nlistaDeJogadores[iterator].indexLocal == this->indexPlayer)
+		{
+			targetNPC.x = nlistaDeJogadores[iterator].posX;
+			targetNPC.y = nlistaDeJogadores[iterator].posY;
+			targetNPC.w = nlistaDeJogadores[iterator].sizeX;
+			targetNPC.h = nlistaDeJogadores[iterator].sizeY;
 
+			targetNPCSprite.x = nlistaDeJogadores[iterator].spritePosX;
+			targetNPCSprite.y = nlistaDeJogadores[iterator].spritePosY;
+			targetNPCSprite.w = nlistaDeJogadores[iterator].spriteSizeX;
+			targetNPCSprite.h = nlistaDeJogadores[iterator].spriteSizeY;
 
-	if(nlistaDeJogadores[iterator].indexLocal == this->indexPlayer ){
-	targetNPC.x = nlistaDeJogadores[iterator].posX;
-	targetNPC.y = nlistaDeJogadores[iterator].posY;
-	targetNPC.w = nlistaDeJogadores[iterator].sizeX;
-	targetNPC.h = nlistaDeJogadores[iterator].sizeY;
-
-	targetNPCSprite.x = nlistaDeJogadores[iterator].spritePosX;
-	targetNPCSprite.y = nlistaDeJogadores[iterator].spritePosY;
-	targetNPCSprite.w = nlistaDeJogadores[iterator].spriteSizeX;
-	targetNPCSprite.h = nlistaDeJogadores[iterator].spriteSizeY;
-
-
-	SDL_RenderCopy(renderer, textureNPC[iterator], &targetNPCSprite, &targetNPC);
-
-}
-}
-//----------------------------------------------------------------
-
+			SDL_RenderCopy(renderer, textureNPC[iterator], &targetNPCSprite, &targetNPC);
+		}
+	}
+	//----------------------------------------------------------------
 
 	//SWAP
-  SDL_RenderPresent(renderer);
+	SDL_RenderPresent(renderer);
 }
 
-
-
-
 /*--------------------------------------------------------------------------------*/
-
 
 /*---------------------CONTROLLER-------------------------------------------------*/
 //this->sprite = IMG_LoadTexture(renderer1, sp.c_str());//endereco da textura
 
-class Controller {
-	private:
-		// Variaveis para verificar eventos
-		SDL_Event evento; // eventos discretos
-		const Uint8* state = SDL_GetKeyboardState(nullptr); // estado do teclado
-		// Controlador:
-		bool rodando = true;
+class Controller
+{
+private:
+	// Variaveis para verificar eventos
+	SDL_Event evento;																		// eventos discretos
+	const Uint8 *state = SDL_GetKeyboardState(nullptr); // estado do teclado
+	// Controlador:
+	bool rodando = true;
 
-	public:
-		bool getRodando();
-		void updateInput();
-		const Uint8* getState();
-		void updatePlayer(Room & lugar);
-		bool updateRoom(Room & lugar, int & vetorAtual);
-
+public:
+	bool getRodando();
+	void updateInput();
+	const Uint8 *getState();
+	void updatePlayer(Room &lugar);
+	bool updateRoom(Room &lugar, int &vetorAtual);
 };
 
-bool Controller::getRodando(){
-  return this->rodando;
+bool Controller::getRodando()
+{
+	return this->rodando;
 }
 
-void Controller::updateInput(){
+void Controller::updateInput()
+{
 	SDL_PumpEvents(); // atualiza estado do teclado
 
-	while (SDL_PollEvent(&evento)){ //tem eventos na fila?
-		if (evento.type == SDL_QUIT){ //se tiver joga fora, se for SDL_QUIT saia
+	while (SDL_PollEvent(&evento))
+	{ //tem eventos na fila?
+		if (evento.type == SDL_QUIT)
+		{ //se tiver joga fora, se for SDL_QUIT saia
 			rodando = false;
-  	}
-  }
+		}
+	}
 }
 
-const Uint8* Controller::getState(){
-  return this->state;
+const Uint8 *Controller::getState()
+{
+	return this->state;
 }
 
-void Controller::updatePlayer(Room & lugar){
+void Controller::updatePlayer(Room &lugar)
+{
 	bool parado = true;
 	int direcaoConflito = 9;
 	bool conflito = false;
 	bool umaDirecao = true;
 
-	for(int iterator = 0; iterator < lugar.roomObjects.size(); iterator++){
-		if(lugar.roomObjects[iterator].getCollider()){
-			if((lugar.roomObjects[iterator].getPosY() ) < (lugar.playerCharacter.getPosY() + lugar.playerCharacter.getSizeY()) && (lugar.roomObjects[iterator].getPosY() + lugar.roomObjects[iterator].getSizeY()  ) > (lugar.playerCharacter.getPosY() + lugar.playerCharacter.getSizeY())){
-				if(   (lugar.playerCharacter.getPosX() < (lugar.roomObjects[iterator].getPosX() + lugar.roomObjects[iterator].getSizeX())) && ((lugar.playerCharacter.getPosX() +  lugar.playerCharacter.getSizeX()) > lugar.roomObjects[iterator].getPosX()) ){
+	for (int iterator = 0; iterator < lugar.roomObjects.size(); iterator++)
+	{
+		if (lugar.roomObjects[iterator].getCollider())
+		{
+			if ((lugar.roomObjects[iterator].getPosY()) < (lugar.playerCharacter.getPosY() + lugar.playerCharacter.getSizeY()) && (lugar.roomObjects[iterator].getPosY() + lugar.roomObjects[iterator].getSizeY()) > (lugar.playerCharacter.getPosY() + lugar.playerCharacter.getSizeY()))
+			{
+				if ((lugar.playerCharacter.getPosX() < (lugar.roomObjects[iterator].getPosX() + lugar.roomObjects[iterator].getSizeX())) && ((lugar.playerCharacter.getPosX() + lugar.playerCharacter.getSizeX()) > lugar.roomObjects[iterator].getPosX()))
+				{
 					direcaoConflito = lugar.playerCharacter.getDir();
 					conflito = true;
-				  if(lugar.roomObjects[iterator].getIsLinker()){
-				  	lugar.playerCharacter.setLinkPendente(lugar.roomObjects[iterator].getLinkPath());
+					if (lugar.roomObjects[iterator].getIsLinker())
+					{
+						lugar.playerCharacter.setLinkPendente(lugar.roomObjects[iterator].getLinkPath());
 					}
 				}
 			}
 		}
 	}
 
-	if (this->state[SDL_SCANCODE_LEFT] && umaDirecao){
+	if (this->state[SDL_SCANCODE_LEFT] && umaDirecao)
+	{
 		umaDirecao = false;
 		parado = false;
 
-		if(conflito == false || direcaoConflito == 2){
-		lugar.playerCharacter.setDir(6);
-		lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
-		lugar.playerCharacter.subPos(lugar.playerCharacter.getVel(),0);
-		lugar.playerCharacter.incEstadoTimer();
-
-			if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*2){
-		  	lugar.playerCharacter.setEstadoSprite(3);
-		  }
-		  else{
-		  	if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*4){
-		    	lugar.playerCharacter.setEstadoSprite(4);
-		  	}
-		    else{
-		      if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
-		        lugar.playerCharacter.setEstadoSprite(3);
-		      }
-		      else{
-		        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*8){
-		          lugar.playerCharacter.setEstadoSprite(5);
-		        }
-		        else{
-		        lugar.playerCharacter.resetEstadoTimer();
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if (this->state[SDL_SCANCODE_RIGHT] && umaDirecao ){
-		umaDirecao = false;
-		parado = false;
-		if(conflito == false || direcaoConflito == 6){
-			lugar.playerCharacter.setDir(2);
-		  lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
-		  lugar.playerCharacter.addPos(lugar.playerCharacter.getVel(),0);
-		  lugar.playerCharacter.incEstadoTimer();
-
-		  if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*2){
-		  	lugar.playerCharacter.setEstadoSprite(6);
-		  	}
-		  else{
-		  	if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*4){
-		  		lugar.playerCharacter.setEstadoSprite(7);
-		  	}
-		    else{
-			    if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
-		      	lugar.playerCharacter.setEstadoSprite(6);
-		      }
-		      else{
-		        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*8){
-		          lugar.playerCharacter.setEstadoSprite(8);
-		        }
-		        else{
-		        lugar.playerCharacter.resetEstadoTimer();
-		      	}
-					}
-		    }
-		  }
-		}
-	}
-
-	if (this->state[SDL_SCANCODE_UP] && umaDirecao ){
-		umaDirecao = false;
-	  parado = false;
-	  if(conflito == false || direcaoConflito == 4){
-		  lugar.playerCharacter.setDir(0);
-		  lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
-		  lugar.playerCharacter.subPos(0,lugar.playerCharacter.getVel());
-		  lugar.playerCharacter.incEstadoTimer();
-
-		  if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*2){
-		  	lugar.playerCharacter.setEstadoSprite(9);
-		  }
-		  else{
-		  	if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*4){
-		    	lugar.playerCharacter.setEstadoSprite(10);
-		    }
-		    else{
-		    	if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
-		        lugar.playerCharacter.setEstadoSprite(9);
-		      }
-		      else{
-		        if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*8){
-		          lugar.playerCharacter.setEstadoSprite(11);
-		        }
-		        else{
-		        	lugar.playerCharacter.resetEstadoTimer();
-		      	}
-		      }
-		    }
-		  }
-		}
-	}
-
-	if (this->state[SDL_SCANCODE_DOWN] && umaDirecao){
-	  parado = false;
-		if(conflito == false || direcaoConflito == 0){
-			lugar.playerCharacter.setDir(4);
+		if (conflito == false || direcaoConflito == 2)
+		{
+			lugar.playerCharacter.setDir(6);
 			lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
-			lugar.playerCharacter.addPos(0,lugar.playerCharacter.getVel());
+			lugar.playerCharacter.subPos(lugar.playerCharacter.getVel(), 0);
 			lugar.playerCharacter.incEstadoTimer();
 
-			if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*2){
-			  lugar.playerCharacter.setEstadoSprite(0);
+			if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 2)
+			{
+				lugar.playerCharacter.setEstadoSprite(3);
 			}
-			else{
-				if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*4){
-					lugar.playerCharacter.setEstadoSprite(1);
+			else
+			{
+				if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 4)
+				{
+					lugar.playerCharacter.setEstadoSprite(4);
 				}
-			  else{
-					if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*6){
-					  lugar.playerCharacter.setEstadoSprite(0);
-				  }
-				 	else{
-				  	if(lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel()*8){
-				  	  lugar.playerCharacter.setEstadoSprite(2);
+				else
+				{
+					if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 6)
+					{
+						lugar.playerCharacter.setEstadoSprite(3);
+					}
+					else
+					{
+						if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 8)
+						{
+							lugar.playerCharacter.setEstadoSprite(5);
 						}
-			      else{
-				      lugar.playerCharacter.resetEstadoTimer();
-				    }
-				  }
+						else
+						{
+							lugar.playerCharacter.resetEstadoTimer();
+						}
+					}
 				}
 			}
 		}
 	}
 
+	if (this->state[SDL_SCANCODE_RIGHT] && umaDirecao)
+	{
+		umaDirecao = false;
+		parado = false;
+		if (conflito == false || direcaoConflito == 6)
+		{
+			lugar.playerCharacter.setDir(2);
+			lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
+			lugar.playerCharacter.addPos(lugar.playerCharacter.getVel(), 0);
+			lugar.playerCharacter.incEstadoTimer();
 
-	if(parado){
-		lugar.playerCharacter.setVel(0);
-		if(lugar.playerCharacter.getEstadoSprite() >= 9){
-			lugar.playerCharacter.setEstadoSprite(9);
-		}
-		else{
-			if(lugar.playerCharacter.getEstadoSprite() >= 6){
+			if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 2)
+			{
 				lugar.playerCharacter.setEstadoSprite(6);
 			}
-			else{
-				if(lugar.playerCharacter.getEstadoSprite() >= 3){
-				  lugar.playerCharacter.setEstadoSprite(3);
+			else
+			{
+				if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 4)
+				{
+					lugar.playerCharacter.setEstadoSprite(7);
 				}
-				else{
-				  lugar.playerCharacter.setEstadoSprite(0);
+				else
+				{
+					if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 6)
+					{
+						lugar.playerCharacter.setEstadoSprite(6);
+					}
+					else
+					{
+						if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 8)
+						{
+							lugar.playerCharacter.setEstadoSprite(8);
+						}
+						else
+						{
+							lugar.playerCharacter.resetEstadoTimer();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (this->state[SDL_SCANCODE_UP] && umaDirecao)
+	{
+		umaDirecao = false;
+		parado = false;
+		if (conflito == false || direcaoConflito == 4)
+		{
+			lugar.playerCharacter.setDir(0);
+			lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
+			lugar.playerCharacter.subPos(0, lugar.playerCharacter.getVel());
+			lugar.playerCharacter.incEstadoTimer();
+
+			if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 2)
+			{
+				lugar.playerCharacter.setEstadoSprite(9);
+			}
+			else
+			{
+				if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 4)
+				{
+					lugar.playerCharacter.setEstadoSprite(10);
+				}
+				else
+				{
+					if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 6)
+					{
+						lugar.playerCharacter.setEstadoSprite(9);
+					}
+					else
+					{
+						if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 8)
+						{
+							lugar.playerCharacter.setEstadoSprite(11);
+						}
+						else
+						{
+							lugar.playerCharacter.resetEstadoTimer();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (this->state[SDL_SCANCODE_DOWN] && umaDirecao)
+	{
+		parado = false;
+		if (conflito == false || direcaoConflito == 0)
+		{
+			lugar.playerCharacter.setDir(4);
+			lugar.playerCharacter.setVel(lugar.playerCharacter.getVelMax());
+			lugar.playerCharacter.addPos(0, lugar.playerCharacter.getVel());
+			lugar.playerCharacter.incEstadoTimer();
+
+			if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 2)
+			{
+				lugar.playerCharacter.setEstadoSprite(0);
+			}
+			else
+			{
+				if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 4)
+				{
+					lugar.playerCharacter.setEstadoSprite(1);
+				}
+				else
+				{
+					if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 6)
+					{
+						lugar.playerCharacter.setEstadoSprite(0);
+					}
+					else
+					{
+						if (lugar.playerCharacter.getEstadoTimer() < lugar.playerCharacter.getVel() * 8)
+						{
+							lugar.playerCharacter.setEstadoSprite(2);
+						}
+						else
+						{
+							lugar.playerCharacter.resetEstadoTimer();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (parado)
+	{
+		lugar.playerCharacter.setVel(0);
+		if (lugar.playerCharacter.getEstadoSprite() >= 9)
+		{
+			lugar.playerCharacter.setEstadoSprite(9);
+		}
+		else
+		{
+			if (lugar.playerCharacter.getEstadoSprite() >= 6)
+			{
+				lugar.playerCharacter.setEstadoSprite(6);
+			}
+			else
+			{
+				if (lugar.playerCharacter.getEstadoSprite() >= 3)
+				{
+					lugar.playerCharacter.setEstadoSprite(3);
+				}
+				else
+				{
+					lugar.playerCharacter.setEstadoSprite(0);
 				}
 			}
 		}
@@ -974,78 +1064,84 @@ void Controller::updatePlayer(Room & lugar){
 	}
 }
 
-bool Controller::updateRoom(Room & lugar, int & vetorAtual){
-	if(lugar.playerCharacter.getLinkPendente()){
+bool Controller::updateRoom(Room &lugar, int &vetorAtual)
+{
+	if (lugar.playerCharacter.getLinkPendente())
+	{
 		vetorAtual = atoi(lugar.playerCharacter.getLinkPath().c_str());
 		return true;
-  }
-  else{
-    return false;
-  }
+	}
+	else
+	{
+		return false;
+	}
 }
 
-
-
 /*---------------------------------------------------------------------*/
-
 
 //MAIN--------------------------------------------------------------------------
 std::chrono::system_clock::time_point tFinal = std::chrono::system_clock::now();
 std::chrono::system_clock::time_point tInicial = std::chrono::system_clock::now();
 
-int main(int argc, char* args[]){
+int main(int argc, char *args[])
+{
 
+	//DIGITAR IP DO SERVIDOR--------------------------------------------------------
 
-//DIGITAR IP DO SERVIDOR--------------------------------------------------------
-
-//------------------------------------------------------------------------------
-
-
-
-
+	//------------------------------------------------------------------------------
 
 	//MODEL
 	const float fps = 60;
-	float millisecondsPerFrame =(1/fps)*1000;
-
+	float millisecondsPerFrame = (1 / fps) * 1000;
 
 	Player jogador;
-	jogador.PlayerData(175,450,62,116,"../assets/spriteplayer.png",0,3,0);
-	jogador.setSpriteSize(31,58);
-	jogador.addSpritePoint(2,2);jogador.addSpritePoint(39,2);jogador.addSpritePoint(76,2);jogador.addSpritePoint(2,66);jogador.addSpritePoint(39,66);jogador.addSpritePoint(76,66);jogador.addSpritePoint(2,130);jogador.addSpritePoint(39,130);jogador.addSpritePoint(76,130);jogador.addSpritePoint(2,194);jogador.addSpritePoint(39,194);jogador.addSpritePoint(76,194);
+	jogador.PlayerData(175, 450, 62, 116, "../assets/spriteplayer.png", 0, 3, 0);
+	jogador.setSpriteSize(31, 58);
+	jogador.addSpritePoint(2, 2);
+	jogador.addSpritePoint(39, 2);
+	jogador.addSpritePoint(76, 2);
+	jogador.addSpritePoint(2, 66);
+	jogador.addSpritePoint(39, 66);
+	jogador.addSpritePoint(76, 66);
+	jogador.addSpritePoint(2, 130);
+	jogador.addSpritePoint(39, 130);
+	jogador.addSpritePoint(76, 130);
+	jogador.addSpritePoint(2, 194);
+	jogador.addSpritePoint(39, 194);
+	jogador.addSpritePoint(76, 194);
 
 	SpriteSimples fundoBar;
-	fundoBar.SpriteData(0,0,780,600,"../assets/spriteBar.png");
+	fundoBar.SpriteData(0, 0, 780, 600, "../assets/spriteBar.png");
 
 	SpriteSimples colider;
-	colider.SpriteData(479,440,300,300,"../assets/spriteVazia.png");
+	colider.SpriteData(479, 440, 300, 300, "../assets/spriteVazia.png");
 	colider.setCollider();
 
 	SpriteSimples colider2;
-	colider2.SpriteData(0,0,780,240,"../assets/spriteVazia.png");
+	colider2.SpriteData(0, 0, 780, 240, "../assets/spriteVazia.png");
 	colider2.setCollider();
 
 	SpriteSimples colider3;
-	colider3.SpriteData(0,0,50,600,"../assets/spriteVazia.png");
+	colider3.SpriteData(0, 0, 50, 600, "../assets/spriteVazia.png");
 	colider3.setCollider();
 
 	SpriteSimples colider4;
-	colider4.SpriteData(725,0,10,600,"../assets/spriteVazia.png");
+	colider4.SpriteData(725, 0, 10, 600, "../assets/spriteVazia.png");
 	colider4.setCollider();
 
 	SpriteSimples link;
-	link.SpriteData(155,600,140,60,"../assets/spriteVazia.png");
+	link.SpriteData(155, 600, 140, 60, "../assets/spriteVazia.png");
 	link.setCollider();
 	link.setLinker("1");
 
 	SpriteSimples stool;
-	stool.SpriteData(423,420,30,51,"../assets/barStool.png");
+	stool.SpriteData(423, 420, 30, 51, "../assets/barStool.png");
 
 	SpriteSimples stool2;
-	stool2.SpriteData(423,470,30,51,"../assets/barStool.png");
+	stool2.SpriteData(423, 470, 30, 51, "../assets/barStool.png");
 
 	SpriteSimples barCounter;
-	barCounter.SpriteData(0,0,780,600,"../assets/spriteBarCounter.png");
+	barCounter.SpriteData(0, 0, 780, 600, "../assets/spriteBarCounter.png");
 
 	Room bar("", jogador, fundoBar);
 
@@ -1061,50 +1157,59 @@ int main(int argc, char* args[]){
 	//------------------------------------------------------------------------------
 
 	Player jogador2;
-	jogador2.PlayerData(370,100,62,116,"../assets/spriteplayer.png",0,3,0);
-	jogador2.setSpriteSize(31,58);
-	jogador2.addSpritePoint(2,2);jogador2.addSpritePoint(39,2);jogador2.addSpritePoint(76,2);jogador2.addSpritePoint(2,66);jogador2.addSpritePoint(39,66);jogador2.addSpritePoint(76,66);jogador2.addSpritePoint(2,130);jogador2.addSpritePoint(39,130);jogador2.addSpritePoint(76,130);jogador2.addSpritePoint(2,194);jogador2.addSpritePoint(39,194);jogador2.addSpritePoint(76,194);
+	jogador2.PlayerData(370, 100, 62, 116, "../assets/spriteplayer.png", 0, 3, 0);
+	jogador2.setSpriteSize(31, 58);
+	jogador2.addSpritePoint(2, 2);
+	jogador2.addSpritePoint(39, 2);
+	jogador2.addSpritePoint(76, 2);
+	jogador2.addSpritePoint(2, 66);
+	jogador2.addSpritePoint(39, 66);
+	jogador2.addSpritePoint(76, 66);
+	jogador2.addSpritePoint(2, 130);
+	jogador2.addSpritePoint(39, 130);
+	jogador2.addSpritePoint(76, 130);
+	jogador2.addSpritePoint(2, 194);
+	jogador2.addSpritePoint(39, 194);
+	jogador2.addSpritePoint(76, 194);
 
 	SpriteSimples fundoBar2;
-	fundoBar2.SpriteData(19,0,741,576,"../assets/spriteHall.png");
+	fundoBar2.SpriteData(19, 0, 741, 576, "../assets/spriteHall.png");
 
 	SpriteSimples link2;
-	link2.SpriteData(290,40,200,20,"../assets/radio.jpg");
+	link2.SpriteData(290, 40, 200, 20, "../assets/radio.jpg");
 	link2.setCollider();
 	link2.setLinker("0");
 
 	SpriteSimples link3;
-	link3.SpriteData(290,600,200,20,"../assets/radio.jpg");
+	link3.SpriteData(290, 600, 200, 20, "../assets/radio.jpg");
 	link3.setCollider();
 	link3.setLinker("2");
 
-
-
 	SpriteSimples arco;
-	arco.SpriteData(283,0,213,243,"../assets/spriteArco.png");
+	arco.SpriteData(283, 0, 213, 243, "../assets/spriteArco.png");
 
 	SpriteSimples colider5;
-	colider5.SpriteData(0,560,800,800,"../assets/radio.jpg");
+	colider5.SpriteData(0, 560, 800, 800, "../assets/radio.jpg");
 	colider5.setCollider();
 
 	SpriteSimples colider6;
-	colider6.SpriteData(0,0,40,600,"../assets/spriteVazia.png");
+	colider6.SpriteData(0, 0, 40, 600, "../assets/spriteVazia.png");
 	colider6.setCollider();
 
 	SpriteSimples colider7;
-	colider7.SpriteData(740,0,50,800,"../assets/spriteVazia.png");
+	colider7.SpriteData(740, 0, 50, 800, "../assets/spriteVazia.png");
 	colider7.setCollider();
 
 	SpriteSimples colider8;
-	colider8.SpriteData(0,0,290,260,"../assets/spriteVazia.jpg");
+	colider8.SpriteData(0, 0, 290, 260, "../assets/spriteVazia.jpg");
 	colider8.setCollider();
 
 	SpriteSimples colider9;
-	colider9.SpriteData(480,0,290,260,"../assets/spriteVazia.jpg");
+	colider9.SpriteData(480, 0, 290, 260, "../assets/spriteVazia.jpg");
 	colider9.setCollider();
 
 	SpriteSimples colider10;
-	colider10.SpriteData(520,125,50,260,"../assets/spriteVazia.jpg");
+	colider10.SpriteData(520, 125, 50, 260, "../assets/spriteVazia.jpg");
 	colider10.setCollider();
 
 	Room bar2(":.ENTRADA.:", jogador2, fundoBar2);
@@ -1116,25 +1221,32 @@ int main(int argc, char* args[]){
 	bar2.AddObject(colider8);
 	bar2.AddObject(colider9);
 	bar2.AddObject(colider10);
- 	bar2.AddObject(link3);
+	bar2.AddObject(link3);
 
 	//------------------------------------------------------------------------------
 
 	Player jogador3;
-	jogador3.PlayerData(370,100,62,116,"../assets/spriteplayer.png",0,3,0);
-	jogador3.setSpriteSize(31,58);
-	jogador3.addSpritePoint(2,2);jogador3.addSpritePoint(39,2);jogador3.addSpritePoint(76,2);jogador3.addSpritePoint(2,66);jogador3.addSpritePoint(39,66);jogador3.addSpritePoint(76,66);jogador3.addSpritePoint(2,130);jogador3.addSpritePoint(39,130);jogador3.addSpritePoint(76,130);jogador3.addSpritePoint(2,194);jogador3.addSpritePoint(39,194);jogador3.addSpritePoint(76,194);
+	jogador3.PlayerData(370, 100, 62, 116, "../assets/spriteplayer.png", 0, 3, 0);
+	jogador3.setSpriteSize(31, 58);
+	jogador3.addSpritePoint(2, 2);
+	jogador3.addSpritePoint(39, 2);
+	jogador3.addSpritePoint(76, 2);
+	jogador3.addSpritePoint(2, 66);
+	jogador3.addSpritePoint(39, 66);
+	jogador3.addSpritePoint(76, 66);
+	jogador3.addSpritePoint(2, 130);
+	jogador3.addSpritePoint(39, 130);
+	jogador3.addSpritePoint(76, 130);
+	jogador3.addSpritePoint(2, 194);
+	jogador3.addSpritePoint(39, 194);
+	jogador3.addSpritePoint(76, 194);
 
 	SpriteSimples fundoBar3;
-	fundoBar3.SpriteData(19,0,741,576,"../assets/spriteHall.png");
+	fundoBar3.SpriteData(19, 0, 741, 576, "../assets/spriteHall.png");
 
 	Room bar3(":.LIMBO.:", jogador3, fundoBar3);
 
-
-
-
 	//----------------------------------------------------------------------------
-
 
 	bool unlockReceive = 0;
 	bool canSend = 0;
@@ -1148,49 +1260,49 @@ int main(int argc, char* args[]){
 
 	//VIEW
 	View janela;
-	janela.initView(100,100,780,600);
+	janela.initView(100, 100, 780, 600);
 	janela.setUpTexture(gameRooms[vetorRoom]);
 
 	//CONTROLLER
 	Controller controle;
 	Multiplayer controleMultiplayer;
 	UDPSystem UDPmultiplayer;
-	UDPmultiplayer.atualizarMeuDado(gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()));
+	UDPmultiplayer.atualizarMeuDado(gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom, controleMultiplayer.getIDMultiplayer()));
 	janela.setindexPlayer(vetorRoom);
 
-//std::cout << gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()) << std::endl;
-//SETANDO-----------------------------------------------------------------------
+	//std::cout << gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()) << std::endl;
+	//SETANDO-----------------------------------------------------------------------
 
+	//------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
+	//multiplayerSprite adicionar(370, 100, 62,116,"../assets/spriteplayer.png", 2,2,31,58,1,999);
+	//controleMultiplayer.addSprite(adicionar);
 
-//multiplayerSprite adicionar(370, 100, 62,116,"../assets/spriteplayer.png", 2,2,31,58,1,999);
-//controleMultiplayer.addSprite(adicionar);
+	bool primeira = 1;
 
+	while (controle.getRodando())
+	{
+		std::thread recebendo(&UDPSystem::receiveAndStoreDataAndClients, &UDPmultiplayer);
+		//controleMultiplayer.updatePlayer();
 
-bool primeira = 1;
+		//IMPORTANTE gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer())
 
-
-	while(controle.getRodando()){
-std::thread recebendo(&UDPSystem::receiveAndStoreDataAndClients, &UDPmultiplayer);
-//controleMultiplayer.updatePlayer();
-
-
-//IMPORTANTE gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer())
-
-//		controleMultiplayer.updatePlayer();
+		//		controleMultiplayer.updatePlayer();
 
 		tFinal = std::chrono::system_clock::now();
 		std::chrono::duration<double, std::milli> spentOnFrame = tFinal - tInicial;
-		if(spentOnFrame.count() < millisecondsPerFrame ){
-			std::chrono::duration<double, std::milli> delta_ms(millisecondsPerFrame- spentOnFrame.count());
+		if (spentOnFrame.count() < millisecondsPerFrame)
+		{
+			std::chrono::duration<double, std::milli> delta_ms(millisecondsPerFrame - spentOnFrame.count());
 			auto delta_ms_duration = std::chrono::duration_cast<std::chrono::milliseconds>(delta_ms);
 			std::this_thread::sleep_for(std::chrono::milliseconds(delta_ms_duration.count()));
 		}
-		else{
-			if(spentOnFrame.count() > millisecondsPerFrame*50){
+		else
+		{
+			if (spentOnFrame.count() > millisecondsPerFrame * 50)
+			{
 				//SDL_QUIT;
-			//	return 0;
+				//	return 0;
 			}
 		}
 		tInicial = std::chrono::system_clock::now();
@@ -1199,11 +1311,12 @@ std::thread recebendo(&UDPSystem::receiveAndStoreDataAndClients, &UDPmultiplayer
 		controle.updateInput();
 		controle.updatePlayer(gameRooms[vetorRoom]);
 		recebendo.join();
-		UDPmultiplayer.atualizarMeuDado(gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom,controleMultiplayer.getIDMultiplayer()));
-		std::thread enviando(&UDPSystem::sendOneDataToAllClients, &UDPmultiplayer, UDPmultiplayer.dadosAtualizados );
+		UDPmultiplayer.atualizarMeuDado(gameRooms[vetorRoom].playerCharacter.returnPacket(vetorRoom, controleMultiplayer.getIDMultiplayer()));
+		std::thread enviando(&UDPSystem::sendOneDataToAllClients, &UDPmultiplayer, UDPmultiplayer.dadosAtualizados);
 		controleMultiplayer.setDadosAtualizados(UDPmultiplayer.dadosAtualizados, UDPmultiplayer.clientesConectados);
 		controleMultiplayer.updatePlayer();
-		if(controle.updateRoom(gameRooms[vetorRoom], vetorRoom)){
+		if (controle.updateRoom(gameRooms[vetorRoom], vetorRoom))
+		{
 			janela.setindexPlayer(vetorRoom);
 			unlockReceive = 1;
 			janela.resetTexture();
@@ -1214,18 +1327,19 @@ std::thread recebendo(&UDPSystem::receiveAndStoreDataAndClients, &UDPmultiplayer
 			janela.resetNPC();
 			janela.setUpNPC(controleMultiplayer.getListaDeJogadores());
 		}
-if(primeira){
-	janela.setindexPlayer(vetorRoom);
-	unlockReceive = 1;
-	janela.resetTexture();
-	janela.setUpTexture(gameRooms[vetorRoom]);
-	janela.changeName(gameRooms[vetorRoom]);
-	controleMultiplayer.setDadosAtualizados(UDPmultiplayer.dadosAtualizados, UDPmultiplayer.clientesConectados);
-	controleMultiplayer.updatePlayer();
-	janela.resetNPC();
-	janela.setUpNPC(controleMultiplayer.getListaDeJogadores());
-	primeira = 0;
-}
+		if (primeira)
+		{
+			janela.setindexPlayer(vetorRoom);
+			unlockReceive = 1;
+			janela.resetTexture();
+			janela.setUpTexture(gameRooms[vetorRoom]);
+			janela.changeName(gameRooms[vetorRoom]);
+			controleMultiplayer.setDadosAtualizados(UDPmultiplayer.dadosAtualizados, UDPmultiplayer.clientesConectados);
+			controleMultiplayer.updatePlayer();
+			janela.resetNPC();
+			janela.setUpNPC(controleMultiplayer.getListaDeJogadores());
+			primeira = 0;
+		}
 		janela.render(gameRooms[vetorRoom], controleMultiplayer.getListaDeJogadores());
 		enviando.join();
 		//GAME LOOP!----------------------------------------
@@ -1233,8 +1347,7 @@ if(primeira){
 
 		//mandar estado do jogador para o servidor
 
-	//	controleMultiplayer.sendMyData();
-
+		//	controleMultiplayer.sendMyData();
 
 		//MULTIPLAYER LOOP!---------------------------------
 	}
