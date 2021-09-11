@@ -41,8 +41,8 @@ OK Médio. Passo 10: COLLISIONS de personagem com objetos. (controller)
 
 -//08/11
 
-(EMERGENCIA)
-concertar:(erro gramatical proposital em homenagem a simetria entre crime e justiça)
+
+concertar:
 subclasses - uma classe só declara muita coisa!
 cópias e cópias- os objetos são repetidos no vetor, use uma função pra declarar os objetos direto no quarto. 
 
